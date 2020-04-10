@@ -27,3 +27,4 @@ func main() {
 }
 //https://github.com/klauspost/cpuid/blob/master/cpuid.go
 // https://pkg.go.dev/github.com/shirou/gopsutil/cpu?tab=doc
+// https://golang.org/pkg/runtime/#NumCPU

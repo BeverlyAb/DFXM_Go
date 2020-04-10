@@ -42,7 +42,7 @@ func main(){
 }
 
 func printTask(t Task){
-    fmt.Println("TID ", t.TID, "CountID ",t.dataOutCount, "LogicalCPU ", t.PID)
+    fmt.Println("TID ", t.TID, "CountID ",t.dataOutCount, "LogicalCPU ",cpuid.CPU.LogicalCPU())
 }
 
 //------------------------------Task Functions----------------------------------------
@@ -77,7 +77,11 @@ func (t Task)receive(c chan Data){
             if senderCountID == t.dataDepVec[i].countID{
                 t.dataDepVec[i].msg = msg
                 t.depCount++
-                fmt.Println("TID ", t.TID, "CountID ",t.dataOutCount, "LogicalCPU ", t.PID)
+                fmt.Println("TID ", t.TID, "CountID ",t.dataOutCount, "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", t.dataDepVec[i].msg)
+                 fmt.Println("TID ", t.TID, "CountID ",t.dataOutCount, "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", t.dataDepVec[i].msg)
+                  fmt.Println("TID ", t.TID, "CountID ",t.dataOutCount, "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", t.dataDepVec[i].msg)
+ fmt.Println("TID ", t.TID, "CountID ",t.dataOutCount, "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", t.dataDepVec[i].msg)
+
             }
         }
     }
