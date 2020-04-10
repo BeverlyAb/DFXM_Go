@@ -18,7 +18,7 @@ func main() {
 	fmt.Println("L1 Instruction Cache:", cpuid.CPU.Cache.L1D, "bytes")
 	fmt.Println("L2 Cache:", cpuid.CPU.Cache.L2, "bytes")
 	fmt.Println("L3 Cache:", cpuid.CPU.Cache.L3, "bytes")
-	fmt.Println("LogicalCoreID:", cpuid.CPU.LogicalCPU)
+	fmt.Println("LogicalCoreID:", cpuid.CPU.LogicalCPU())
 
 	// Test if we have a specific feature:
 	if cpuid.CPU.SSE() {
@@ -28,3 +28,4 @@ func main() {
 //https://github.com/klauspost/cpuid/blob/master/cpuid.go
 // https://pkg.go.dev/github.com/shirou/gopsutil/cpu?tab=doc
 // https://golang.org/pkg/runtime/#NumCPU
+//https://golang.org/pkg/runtime/pprof/
