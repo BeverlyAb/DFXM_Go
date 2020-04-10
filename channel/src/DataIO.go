@@ -3,7 +3,7 @@ package main
 import (
     "fmt"
     "github.com/klauspost/cpuid"
-    "strings"
+    "time"
 )
 
 type Data struct {
@@ -13,33 +13,36 @@ type Data struct {
 }
 //creates data dep. of up to size, dep. are from T0 to T(size) -1
 func createDepVec(size int)[]Data{
-    var dataDepVec []Data
+    var dataDepVec = make([]Data,size)
     for i  := 0; i < size; i++ {
         dataDepVec[i] = Data{0, i, 0}
     }
     return dataDepVec
 }
 func main(){
-    t0 :=  Task{0, createDepVec(0),0, string(cpuid.CPU.LogicalCPU),0}
-    t1 := Task{1, createDepVec(1),0,cpuid.CPU.LogicalCPU,1}
-    t2 := Task{2, createDepVec(2),0,cpuid.CPU.LogicalCPU,2}
+    
+    t0 :=  Task{0, createDepVec(0), 0, cpuid.CPU.LogicalCPU(),0}
+    t1 := Task{1, createDepVec(1), 0,cpuid.CPU.LogicalCPU(),1}
+    t2 := Task{2, createDepVec(2), 0,cpuid.CPU.LogicalCPU(),2}
 
-    printTask(t0)
-    printTask(t1)
-    printTask(t2)
+    // printTask(t0)
+    // printTask(t1)
+    // printTask(t2)
 
     c0 := make(chan Data)
     c1 := make(chan Data)
 
-    t0.compute(c0)
-    t1.receive(c0)
+    go t0.compute(c0)
+    go t1.receive(c0)
 
-    t1.compute(c1)
-    t2.receive(c1)
+    go t1.compute(c1)
+    go t2.receive(c1)
+
+    time.Sleep(100*time.Millisecond)
 }
 
 func printTask(t Task){
-    fmt.Print("TID %i Data %i CountID %i", t.TID, t.dataDepVec[0].msg ,t.dataOutCount)
+    fmt.Println("TID ", t.TID, "CountID ",t.dataOutCount, "LogicalCPU ", t.PID)
 }
 
 //------------------------------Task Functions----------------------------------------
@@ -47,7 +50,7 @@ type Task struct{
 	TID int
 	dataDepVec[] Data 
     dataOutCount int//dataOutVec[] Data
-    PID string
+    PID int
     depCount int
 } 
 
@@ -71,9 +74,10 @@ func (t Task)receive(c chan Data){
 
         i := Find(t.dataDepVec, senderID) 
         if i != len(t.dataDepVec){
-            if senderCountID >= t.dataDepVec[i].countID{
+            if senderCountID == t.dataDepVec[i].countID{
                 t.dataDepVec[i].msg = msg
                 t.depCount++
+                fmt.Println("TID ", t.TID, "CountID ",t.dataOutCount, "LogicalCPU ", t.PID)
             }
         }
     }
@@ -99,6 +103,6 @@ func (t Task)compute(c chan Data){
 
 //opens chan 
 func (t Task)fire(dataOut Data, c chan Data){
+    defer close(c)
     c<-dataOut
-    close(c)
 }
