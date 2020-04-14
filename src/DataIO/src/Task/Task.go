@@ -15,7 +15,7 @@ import (
 type Task struct{
 	TID int
 	DataDepVec[] data.Data 
-    DataOutCount int//dataOutVec[] Data
+    //DataOutMsg int//dataOutVec[] Data
     PID int
     DepCount int
 } 
@@ -43,7 +43,10 @@ func (t Task)Receive(c chan data.Data){
             if senderCountID == t.DataDepVec[i].CountID{
                 t.DataDepVec[i].Msg = msg
                 t.DepCount++
-               fmt.Println("TID ", t.TID, "CountID ",t.DataOutCount, "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", t.DataDepVec[i].Msg)
+                fmt.Println("Recvd:\tTID ", t.TID,  "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", t.DataDepVec[i].Msg,"Msg ID ", senderCountID)
+                // if cpuid.CPU.LogicalCPU() % 2 ==0{
+                //     fmt.Println("even ",cpuid.CPU.LogicalCPU())
+                // }
             }
         }
     }
@@ -61,9 +64,11 @@ func (t Task)Compute(c chan data.Data){
 
         var msg int = (t.TID + 1) *100
         var TID int = t.TID
-        var countID int = t.DataOutCount
+        //var countID int = t.DataOutMsg
+        var countID = 0
         var dataOut data.Data = data.Data{msg, TID, countID}
         t.Fire(dataOut, c)
+        fmt.Println("Fired:\tTID ", TID, "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", dataOut.Msg, "Msg ID ", dataOut.CountID)
     }
 }
 
@@ -74,5 +79,5 @@ func (t Task)Fire(dataOut data.Data, c chan data.Data){
 }
 
 func PrintTask(t Task){
-    fmt.Println("TID ", t.TID, "CountID ",t.DataOutCount, "LogicalCPU ",cpuid.CPU.LogicalCPU())
+    //fmt.Println("TID ", t.TID, "CountID ",t.DataOutMsg, "LogicalCPU ",cpuid.CPU.LogicalCPU())
 }

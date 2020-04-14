@@ -9,9 +9,9 @@ import (
 
 func main(){
     
-    t0 :=  task.Task{0, CreateDepVec(0), 0, cpuid.CPU.LogicalCPU(),0}
-    t1 := task.Task{1, CreateDepVec(1), 0,cpuid.CPU.LogicalCPU(),1}
-    t2 := task.Task{2, CreateDepVec(2), 0,cpuid.CPU.LogicalCPU(),2}
+    t0 :=  task.Task{0, CreateDepVec(0), cpuid.CPU.LogicalCPU(),0}
+    t1 := task.Task{1, CreateDepVec(1), cpuid.CPU.LogicalCPU(),1}
+    t2 := task.Task{2, CreateDepVec(2), cpuid.CPU.LogicalCPU(),2}
 
     // printTask(t0)
     // printTask(t1)
