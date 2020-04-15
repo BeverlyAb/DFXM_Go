@@ -1,8 +1,8 @@
-//package depchantable
-package main
+package depchantable
+// package main
 
 import (
-    "fmt"
+   "fmt"
     "data"
 )
 
@@ -70,12 +70,23 @@ func (table DepChanTable)SET_TID_ChanTable(){
 
 }
 
-func main(){
-	TID_DEPTable := make(map[int][]int)
-	TID_ChanTable := make(map[int]chan data.Data)
-	test := DepChanTable{TID_DEPTable,TID_ChanTable}
-	test.SET_TID_DEPTable()
-	fmt.Println("8th's first ",test.TID_DEPTable[8][0])
-	test.SET_TID_ChanTable()
-	fmt.Println("Channel 5 ",test.TID_ChanTable[5])
+func(table DepChanTable)PrintTIDTable(){
+	for i, deps := range table.TID_DEPTable{
+		fmt.Println("TID ", i, "Dep(s): ",deps)
+	}
 }
+
+func(table DepChanTable)PrintChanTable(){
+	for i, chanElem := range table.TID_ChanTable{
+		fmt.Println("chan ", i, " ",chanElem)
+	}
+}
+// func main(){
+// 	TID_DEPTable := make(map[int][]int)
+// 	TID_ChanTable := make(map[int]chan data.Data)
+// 	test := DepChanTable{TID_DEPTable,TID_ChanTable}
+// 	test.SET_TID_DEPTable()
+// 	fmt.Println("8th's first ",test.TID_DEPTable[8][0])
+// 	test.SET_TID_ChanTable()
+// 	fmt.Println("Channel 5 ",test.TID_ChanTable[5])
+// }

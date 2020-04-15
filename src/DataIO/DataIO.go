@@ -5,10 +5,20 @@ import (
     "time"
     "task"
     "data"
+    "depchantable"
 )
 
 func main(){
-    
+    TID_DEPTable := make(map[int][]int)
+	TID_ChanTable := make(map[int]chan data.Data)
+	test := depchantable.DepChanTable{TID_DEPTable,TID_ChanTable}
+	test.SET_TID_DEPTable()
+	test.PrintTIDTable()
+	test.SET_TID_ChanTable()
+	test.PrintChanTable()
+
+
+
     t0 :=  task.Task{0, CreateDepVec(0), cpuid.CPU.LogicalCPU(),0}
     t1 := task.Task{1, CreateDepVec(1), cpuid.CPU.LogicalCPU(),1}
     t2 := task.Task{2, CreateDepVec(2), cpuid.CPU.LogicalCPU(),2}
