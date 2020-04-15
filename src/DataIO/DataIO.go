@@ -19,13 +19,10 @@ func main(){
 
 
 
-    t0 :=  task.Task{0, CreateDepVec(0), cpuid.CPU.LogicalCPU(),0}
-    t1 := task.Task{1, CreateDepVec(1), cpuid.CPU.LogicalCPU(),1}
-    t2 := task.Task{2, CreateDepVec(2), cpuid.CPU.LogicalCPU(),2}
+    t0 :=  task.Task{0, test.TID_DEPTable[0], cpuid.CPU.LogicalCPU(),0,TID_DEPTable,TID_ChanTable}
+    t1 := task.Task{1, test.TID_DEPTable[1], cpuid.CPU.LogicalCPU(),1,TID_DEPTable,TID_ChanTable}
+    t2 := task.Task{2, test.TID_DEPTable[2], cpuid.CPU.LogicalCPU(),2,TID_DEPTable,TID_ChanTable}
 
-    // printTask(t0)
-    // printTask(t1)
-    // printTask(t2)
 
     c0 := make(chan data.Data)
     c1 := make(chan data.Data)

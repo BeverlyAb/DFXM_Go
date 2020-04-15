@@ -12,6 +12,8 @@ type Task struct{
     //DataOutMsg int//dataOutVec[] Data
     PID int
     DepCount int
+    TID_DEPTable map[int][] int
+    TID_ChanTable map[int]chan data.Data
 } 
 
 // Find returns the smallest index i at which x == a[i],
@@ -53,7 +55,7 @@ func (t Task)ReadyToCompute()bool{
 
 //computes and fire
 func (t Task)Compute(c chan data.Data){
-    if t.ReadyToCompute() {
+    if t.ReadyToCompute() && t.DiscernChan(c){
         t.DepCount = 0
 
         var msg int = (t.TID + 1) *100
@@ -71,6 +73,21 @@ func (t Task)Fire(dataOut data.Data, c chan data.Data){
     defer close(c)
     c<-dataOut
 }
+
+//returns true if task should listen on the channel, since it contains its dep
+func(t Task)DiscernChan(chanIn chan data.Data)bool{
+    var vecTID = make([]int,4)
+    vecTID = t.TID_DEPTable[t.TID]
+
+    for TID := range vecTID{
+        if t.TID_ChanTable[TID] == chanIn{
+            fmt.Println("TID ",t.TID, " SenderTID ", t.TID_ChanTable[TID])
+            return true
+        }
+    }
+    return false
+}
+
 
 func PrintTask(t Task){
     //fmt.Println("TID ", t.TID, "CountID ",t.DataOutMsg, "LogicalCPU ",cpuid.CPU.LogicalCPU())
