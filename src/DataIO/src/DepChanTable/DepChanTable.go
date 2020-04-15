@@ -58,6 +58,7 @@ func (table DepChanTable)SET_TID_ChanTable(){
 	var chan5 = make(chan data.Data)
 	var chan6 = make(chan data.Data)
 	var chan7 = make(chan data.Data)
+	var chan8 = make(chan data.Data)
 
 	table.TID_ChanTable[0] = chan0
 	table.TID_ChanTable[1] = chan1
@@ -67,6 +68,7 @@ func (table DepChanTable)SET_TID_ChanTable(){
 	table.TID_ChanTable[5] = chan5
 	table.TID_ChanTable[6] = chan6
 	table.TID_ChanTable[7] = chan7
+	table.TID_ChanTable[8] = chan8
 
 }
 

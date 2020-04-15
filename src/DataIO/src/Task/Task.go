@@ -9,7 +9,7 @@ import (
 type Task struct{
     TID int
     DataDepVec[] data.Data 
-    //DataOutMsg int//dataOutVec[] Data
+    DataOutMsg int//dataOutVec[] Data
     PID int
     DepCount int
     TID_DEPTable map[int][] int
