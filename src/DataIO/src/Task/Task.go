@@ -28,10 +28,11 @@ func Find(a []data.Data, x int) int {
 }
 
 //checks chan, if senderCountID >= recCountID, update data
-func (t Task)Receive(c chan data.Data){
+func (t Task)Receive(c <-chan data.Data){
   //  if t.DiscernChan(c){
-
         for recData := range c {
+             fmt.Println("Recvd:\tTID ", t.TID,  "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", recData.Msg)
+                    
             msg := recData.Msg
             senderID := recData.TID
             senderCountID := recData.CountID
