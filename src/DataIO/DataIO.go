@@ -86,13 +86,9 @@ func main(){
     // go t4.Receive(test.TID_ChanTable[1])
     // go t4.Receive(test.TID_ChanTable[2])
 
-    c0 := producer(1,&t0)
-    // chans := fanOutUnbuffered(c, 3)
-    // go consumer(chans[0],t1)
-    // go consumer(chans[1],t2)
-    // consumer(chans[2],t3)
 
     //0 Fires
+    c0 := producer(1,&t0)
     c0Dep := 3
     chan0 := fanOutUnbuffered(c0, c0Dep)
     t1.TID_ChanTable[t1.TID] = chan0[0]
@@ -161,7 +157,7 @@ func main(){
 
      //Display 8 contents
      fmt.Println("TID ", t8.TID, "Contains ", t8.DataOutMsg)
-    
+
 }
 
 func producer(iters int, t * task.Task) <-chan data.Data {
@@ -192,11 +188,7 @@ func consumer(cin <-chan data.Data,  t * task.Task) {
                 if senderCountID == t.DataDepVec[i].CountID{
                     t.DataDepVec[i].Msg = msg
                     t.DepCount++
-                    if t.TID != 8 { //final task
-                    t.DataOutMsg = msg
-                    } else{
-                        t.DataOutMsg += msg
-                    }
+                    t.DataOutMsg += msg
                     // fmt.Println("Recvd:\tTID ", t.TID,  "LogicalCPU ", cpuid.CPU.LogicalCPU(), "NewData ", t.DataOutMsg,"Msg ID ", senderCountID)
                     fmt.Println("TID ", t.TID, " Received  ",t.DataDepVec[i].Msg, " from TID ",senderID)
                 }
