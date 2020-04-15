@@ -7,8 +7,8 @@ import (
 )
 
 type Task struct{
-	TID int
-	DataDepVec[] data.Data 
+    TID int
+    DataDepVec[] data.Data 
     //DataOutMsg int//dataOutVec[] Data
     PID int
     DepCount int
@@ -29,7 +29,8 @@ func Find(a []data.Data, x int) int {
 
 //checks chan, if senderCountID >= recCountID, update data
 func (t Task)Receive(c chan data.Data){
-    if t.DiscernChan(c){
+  //  if t.DiscernChan(c){
+
         for recData := range c {
             msg := recData.Msg
             senderID := recData.TID
@@ -47,7 +48,7 @@ func (t Task)Receive(c chan data.Data){
                 }
             }
         }
-    }
+   // }
 }
 
 //checks if all dep. met
