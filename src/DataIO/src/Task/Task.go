@@ -6,12 +6,6 @@ import (
     "data"
 )
 
-// type Data struct {
-//     msg int
-//     TID int
-//     countID  int
-// }
-
 type Task struct{
 	TID int
 	DataDepVec[] data.Data 
