@@ -49,9 +49,26 @@ func (table DepChanTable)SET_TID_DEPTable(){
 }
 
 //for now static; will need taskSize later
-// func (d DepChanTable)TID_ChanTable(){
+func (table DepChanTable)SET_TID_ChanTable(){
+	var chan0 = make(chan data.Data)
+	var chan1 = make(chan data.Data)
+	var chan2 = make(chan data.Data)
+	var chan3 = make(chan data.Data)
+	var chan4 = make(chan data.Data)
+	var chan5 = make(chan data.Data)
+	var chan6 = make(chan data.Data)
+	var chan7 = make(chan data.Data)
 
-// }
+	table.TID_ChanTable[0] = chan0
+	table.TID_ChanTable[1] = chan1
+	table.TID_ChanTable[2] = chan2
+	table.TID_ChanTable[3] = chan3
+	table.TID_ChanTable[4] = chan4
+	table.TID_ChanTable[5] = chan5
+	table.TID_ChanTable[6] = chan6
+	table.TID_ChanTable[7] = chan7
+
+}
 
 func main(){
 	TID_DEPTable := make(map[int][]int)
@@ -59,5 +76,6 @@ func main(){
 	test := DepChanTable{TID_DEPTable,TID_ChanTable}
 	test.SET_TID_DEPTable()
 	fmt.Println("8th's first ",test.TID_DEPTable[8][0])
-
+	test.SET_TID_ChanTable()
+	fmt.Println("Channel 5 ",test.TID_ChanTable[5])
 }
