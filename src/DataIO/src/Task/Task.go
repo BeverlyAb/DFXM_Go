@@ -29,20 +29,22 @@ func Find(a []data.Data, x int) int {
 
 //checks chan, if senderCountID >= recCountID, update data
 func (t Task)Receive(c chan data.Data){
-    for recData := range c {
-        msg := recData.Msg
-        senderID := recData.TID
-        senderCountID := recData.CountID
+    if t.DiscernChan(c){
+        for recData := range c {
+            msg := recData.Msg
+            senderID := recData.TID
+            senderCountID := recData.CountID
 
-        i := Find(t.DataDepVec, senderID) 
-        if i != len(t.DataDepVec){
-            if senderCountID == t.DataDepVec[i].CountID{
-                t.DataDepVec[i].Msg = msg
-                t.DepCount++
-                fmt.Println("Recvd:\tTID ", t.TID,  "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", t.DataDepVec[i].Msg,"Msg ID ", senderCountID)
-                // if cpuid.CPU.LogicalCPU() % 2 ==0{
-                //     fmt.Println("even ",cpuid.CPU.LogicalCPU())
-                // }
+            i := Find(t.DataDepVec, senderID) 
+            if i != len(t.DataDepVec){
+                if senderCountID == t.DataDepVec[i].CountID{
+                    t.DataDepVec[i].Msg = msg
+                    t.DepCount++
+                    fmt.Println("Recvd:\tTID ", t.TID,  "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", t.DataDepVec[i].Msg,"Msg ID ", senderCountID)
+                    // if cpuid.CPU.LogicalCPU() % 2 ==0{
+                    //     fmt.Println("even ",cpuid.CPU.LogicalCPU())
+                    // }
+                }
             }
         }
     }
@@ -55,7 +57,7 @@ func (t Task)ReadyToCompute()bool{
 
 //computes and fire
 func (t Task)Compute(c chan data.Data){
-    if t.ReadyToCompute() && t.DiscernChan(c){
+    if t.ReadyToCompute(){
         t.DepCount = 0
 
         var msg int = (t.TID + 1) *100
@@ -81,7 +83,7 @@ func(t Task)DiscernChan(chanIn chan data.Data)bool{
 
     for TID := range vecTID{
         if t.TID_ChanTable[TID] == chanIn{
-            fmt.Println("TID ",t.TID, " SenderTID ", t.TID_ChanTable[TID])
+            fmt.Println("TID ",t.TID, " SenderTID ", TID)
             return true
         }
     }
