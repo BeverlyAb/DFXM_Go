@@ -28,8 +28,7 @@ func main(){
     fmt.Println(dct.TaskSet[0:dct.TaskSize])
  
     for i := 0; i < size; i++{
-        if(dct.TaskSet[i].ReadyToCompute()){
-            fmt.Println(i)
+        dct.TaskSet[i].Fire())
         }
     }
  }
