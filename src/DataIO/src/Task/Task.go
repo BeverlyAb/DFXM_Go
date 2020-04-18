@@ -47,11 +47,12 @@ func (t * Task)Producer(iters int) <-chan data.Data {
         for i := 0; i < iters; i++ {
             msg := int(math.Pow(10,float64(t.TID)))
             c <- data.Data{msg,t.TID,0}
-            fmt.Println("TID ", t.TID, "Fired and Converted ",msg)
-            t.Invalidate()
+            fmt.Println("TID ", t.TID, "Fired and Converted ",msg) 
         }
+        t.Invalidate()  
         close(c)
     }()
+    
     return c
 }
 
