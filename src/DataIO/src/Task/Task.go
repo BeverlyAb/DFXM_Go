@@ -18,7 +18,7 @@ type Task struct{
 } 
 
 //Tasks sends data and releases info
-func (t * Task)Fire(iters int, TaskSet  [100] Task) {
+func (t * Task)Fire(iters int, TaskSet *  [100] Task) {
     if t.readyToCompute(){
         mainChan := t.Producer(iters)
         chanSet := t.FanOutUnbuffered(mainChan,len(t.Send_to))
@@ -79,7 +79,7 @@ func (t * Task)FanOutUnbuffered(ch <-chan data.Data, size int) []chan data.Data 
 
 //assigns the channels on the receiving end after a task fires
 //and receivers consume data
-func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet   [100] Task){
+func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet *  [100] Task){
     for i := 0; i < len(t.Send_to); i++ {
         go (TaskSet)[t.Send_to[i]].Consumer(chanSet[i], t.TID)
     }
