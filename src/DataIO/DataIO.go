@@ -28,12 +28,16 @@ func main(){
     fmt.Println(dct.TaskSet[0:dct.TaskSize])
  
     numOfData := 1
-    for j := 0; j < 5; j++{
+   
+    for !dct.TasksComplete(){
         for i := 0; i < size; i++{
-            dct.TaskSet[i].Fire(numOfData,&dct.TaskSet)
+            if dct.TaskSet[i].TID != -1 {
+                dct.TaskSet[i].Fire(numOfData,&dct.TaskSet)
+            }
         }
 
     }
+
     time.Sleep(100*time.Millisecond)
     fmt.Println(dct.TaskSet[0:5])
  }

@@ -65,6 +65,20 @@ func (dct * DepChanTable)createRecFrom(index int)map[int]bool{
 	}
 	return recFrom
 }
+// func (dct * DepChanTable)RemoveTask(index int){
+// 	dct.TaskSet[index].Invalidate()
+// }
+
+func(dct * DepChanTable)TasksComplete()bool{
+	for i := 0; i < dct.TaskSize -1; i++{//exclude last task
+		if dct.TaskSet[i].TID != -1{
+			return false
+		}
+	}
+	return true
+}
+
+
 //prints DAG
 func (dct DepChanTable)PrintDAGTable(){
 	for i := 0; i < dct.TaskSize; i++ {

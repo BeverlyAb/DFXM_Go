@@ -23,6 +23,7 @@ func (t * Task)Fire(iters int, TaskSet *  [100] Task) {
         mainChan := t.Producer(iters)
         chanSet := t.FanOutUnbuffered(mainChan,len(t.Send_to))
         t.assignRecChan(chanSet,  TaskSet)
+
     }   
 }
 
@@ -47,6 +48,7 @@ func (t * Task)Producer(iters int) <-chan data.Data {
             msg := int(math.Pow(10,float64(t.TID)))
             c <- data.Data{msg,t.TID,0}
             fmt.Println("TID ", t.TID, "Fired and Converted ",msg)
+            t.Invalidate()
         }
         close(c)
     }()
@@ -99,4 +101,8 @@ func (t * Task)updateRecFrom(senderTID int){
     t.Rec_from[senderTID] = true
 }
 
+//changes TID to invalidate
+func (t * Task)Invalidate(){
+    t.TID = -1
+}
 
