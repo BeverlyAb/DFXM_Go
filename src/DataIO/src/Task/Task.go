@@ -48,25 +48,8 @@ func (t * Task)Producer(iters int) <-chan data.Data {
 func (t * Task)Consumer(cin <-chan data.Data) {
     for recData := range cin {
             
-            msg := recData.Msg
-            senderID := recData.TID
-            senderCountID := recData.CountID
-
-
-            i := Find(t.DataDepVec, senderID) 
-            if i != len(t.DataDepVec){
-                if senderCountID == t.DataDepVec[i].CountID{
-                    t.DataDepVec[i].Msg = msg
-                    t.DepCount++
-                    t.DataOutMsg += msg
-                    // fmt.Println("Recvd:\tTID ", t.TID,  "LogicalCPU ", cpuid.CPU.LogicalCPU(), "NewData ", t.DataOutMsg,"Msg ID ", senderCountID)
-                    fmt.Println("TID ", t.TID, " Received  ",t.DataDepVec[i].Msg, " from TID ",senderID)
-                }
-            }
-
-
-        // fmt.Println("Msg ",recData.Msg, "SenderTID ",recData.TID, "MsgCount ",recData.CountID)
-    }
+      fmt.Println("TID ", t.TID, " Received  ",recData.Msg, " from TID ",recData.TID)
+  }
 
 
 }
@@ -96,7 +79,7 @@ func (t Task)FanOutUnbuffered(ch <-chan data.Data, size int) []chan data.Data {
 
 //assigns the channels on the receiving end after a task fires
 //and receivers consume data
-func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet * [] task){
+func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet  [100] Task){
     for i := 0; i < len(t.Send_to); i++ {
         //TaskSet[t.Send_to[i]] = chanSet[i]
         TaskSet[t.Send_to[i]].Consumer(chanSet[i])
@@ -105,11 +88,11 @@ func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet * [] task){
 }
 
 //Tasks sends data and releases info
-func (t * Task)Fire(iters int, TaskSet * [] task) {
-    if t.ReadyToCompute(){
+func (t * Task)Fire(iters int, TaskSet [100] Task) {
+    if t.readyToCompute(){
         mainChan := t.Producer(iters)
         chanSet := t.FanOutUnbuffered(mainChan,len(t.Send_to))
-        t.assignRecChan(chanSet, & TaskSet)
+        t.assignRecChan(chanSet, TaskSet)
     }   
 }
 

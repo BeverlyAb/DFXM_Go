@@ -27,8 +27,9 @@ func main(){
     dct.CreateTaskSet()
     fmt.Println(dct.TaskSet[0:dct.TaskSize])
  
+    numOfData := 1
     for i := 0; i < size; i++{
-        dct.TaskSet[i].Fire())
-        }
+        dct.TaskSet[i].Fire(numOfData,dct.TaskSet)
     }
+    
  }
