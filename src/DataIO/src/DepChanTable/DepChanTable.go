@@ -1,15 +1,14 @@
-//package depchantable
- package main
+package depchantable
+ // package main
 //https://www.golangprograms.com/constructors-in-golang.html
 import (
    "fmt"
-   // "data"
    "task"
    "math/rand"
 )
 
 
-type DepChanTable struct{
+type DepChanTable struct{ //100 is MAX (how to set macro?)
 	TaskSize int
 	TaskSet [100] task.Task
 	percentageOfCon int
@@ -76,18 +75,19 @@ func (dct DepChanTable)PrintDAGTable(){
 	} 
 }
 
-func main(){
-	var size int = 5
-	var percent int = 50
-	dct := new(DepChanTable)
+// //test
+// func main(){
+// 	var size int = 5
+// 	var percent int = 50
+// 	dct := new(DepChanTable)
 
-	dct.Init(size,percent)
-	dct.CreateDAGTable()
-	dct.PrintDAGTable()
+// 	dct.Init(size,percent)
+// 	dct.CreateDAGTable()
+// 	dct.PrintDAGTable()
 	
-	fmt.Println(dct.createSendTo(1))
-	fmt.Println(dct.createRecFrom(3))
+// 	fmt.Println(dct.createSendTo(1))
+// 	fmt.Println(dct.createRecFrom(3))
 	
-	dct.CreateTaskSet()
-	fmt.Println(dct.TaskSet[0:dct.TaskSize+1])
-}
+// 	dct.CreateTaskSet()
+// 	fmt.Println(dct.TaskSet[0:dct.TaskSize])
+// }

@@ -15,11 +15,26 @@ type Task struct{
     PID int                 //Processor ID
 } 
 
-func (t Task)Init(TID int, recFrom map[int]bool, sendTo []int){
-    t.TID = TID
-    t.Rec_from = recFrom
-    t.Send_to = sendTo
+func (t * Task)Fire(){
+   
 }
+
+func (t * Task)ReadyToCompute()bool{
+    if len(t.Rec_from) == 0 {
+        return true
+    } 
+    for i := 0; i < len(t.Rec_from); i++ {
+        if !t.Rec_from[i]{
+            return false
+        } 
+    }
+    return true
+}
+// func (t Task)Init(TID int, recFrom map[int]bool, sendTo []int){
+//     t.TID = TID
+//     t.Rec_from = recFrom
+//     t.Send_to = sendTo
+// }
 
 // // Find returns the smallest index i at which x == a[i],
 // // or len(a) if there is no such index.
