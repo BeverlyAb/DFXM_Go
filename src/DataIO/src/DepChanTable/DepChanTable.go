@@ -1,5 +1,5 @@
-package depchantable
- // package main
+// package depchantable
+ package main
 //https://www.golangprograms.com/constructors-in-golang.html
 import (
    "fmt"
@@ -10,24 +10,39 @@ import (
 
 type DepChanTable struct{ //100 is MAX (how to set macro?)
 	TaskSize int
-	TaskSet [100] task.Task
+	TaskSet [] task.Task
 	percentageOfCon int
-	DAGTable [100][100] int //rec x send
+	DAGTable [][] int //rec x send
 } 
 
 //init, percentageOfCon = % of forward directed edges
 func (dct * DepChanTable)Init(size int, percent int){
 	dct.TaskSize = size
 	dct.percentageOfCon = percent
+	dct.TaskSet = make([]task.Task, dct.TaskSize)
+	dct.DAGTable = make([][]int, 0)
 }
 
 //Creates a pseudo-random DAG 
 func (dct * DepChanTable)CreateDAGTable(){
+	
+	tmp := make([]int,0)
+	dct.DAGTable = make([][]int,0)
+	for i := 0; i < dct.TaskSize; i ++{
+
+	      tmp = make([]int, 0)
+	      for j := 0; j < dct.TaskSize; j ++{
+	            tmp = append(tmp, 0)
+	      }
+	    dct.DAGTable = append(dct.DAGTable, tmp)
+
+	} 
+	
 	for i := 0; i < dct.TaskSize; i++ {
 	    for j := i+1; j < dct.TaskSize; j++  {
 	    	random := rand.Intn(100) // fixed random
 	       	if random < dct.percentageOfCon {
-	       		dct.DAGTable[j][i] = 1 //inverted, so that lower left triangle is populated
+	       		dct.DAGTable[j][i] = 1 //inverted, so that lower left triangle is populated	
 	       }
 	    }
 	} 
@@ -89,19 +104,19 @@ func (dct DepChanTable)PrintDAGTable(){
 	} 
 }
 
-// //test
-// func main(){
-// 	var size int = 5
-// 	var percent int = 50
-// 	dct := new(DepChanTable)
+//test
+func main(){
+	var size int = 5
+	var percent int = 50
+	dct := new(DepChanTable)
 
-// 	dct.Init(size,percent)
-// 	dct.CreateDAGTable()
-// 	dct.PrintDAGTable()
+	dct.Init(size,percent)
+	dct.CreateDAGTable()
+	dct.PrintDAGTable()
 	
 // 	fmt.Println(dct.createSendTo(1))
 // 	fmt.Println(dct.createRecFrom(3))
 	
 // 	dct.CreateTaskSet()
 // 	fmt.Println(dct.TaskSet[0:dct.TaskSize])
-// }
+}

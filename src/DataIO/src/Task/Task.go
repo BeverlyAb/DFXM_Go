@@ -83,18 +83,22 @@ func (t * Task)FanOutUnbuffered(ch <-chan data.Data, size int) []chan data.Data 
 //assigns the channels on the receiving end after a task fires
 //and receivers consume data
 func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet *  [100] Task){
-    for i := 0; i < len(t.Send_to); i++ {
-        go (TaskSet)[t.Send_to[i]].Consumer(chanSet[i], t.TID)
-    }
+    go func(){
+        for i := 0; i < len(t.Send_to); i++ {
+            (TaskSet)[t.Send_to[i]].Consumer(chanSet[i], t.TID)
+        }
+    }()
 }
 
 //consumes data from channel and updates RecFrom
 func (t * Task)Consumer(cin <-chan data.Data, senderTID int) {
-    for recData := range cin {
-        t.updateRecFrom(senderTID)
-        // fmt.Println("TID ",t.TID, "Sent data to ",t.Send_to[i])
-        fmt.Println("TID ", t.TID, " Received  ",recData.Msg, " from TID ",recData.TID)
-    }
+    //go func(){
+        for recData := range cin {
+             t.updateRecFrom(senderTID)
+            // fmt.Println("TID ",t.TID, "Sent data to ",t.Send_to[i])
+            fmt.Println("TID ", t.TID, " Received  ",recData.Msg, " from TID ",recData.TID)
+        }
+    //}()
 }
 
 //updates RecFrom from recevier view to indicate that the sender sent data and was received

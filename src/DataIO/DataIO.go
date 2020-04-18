@@ -27,16 +27,20 @@ func main(){
     dct.CreateTaskSet()
     fmt.Println(dct.TaskSet[0:dct.TaskSize])
  
-    numOfData := 1
+    // numOfData := 1
    
-    for !dct.TasksComplete(){
-        for i := 0; i < size; i++{
-            if dct.TaskSet[i].TID != -1 {
-                dct.TaskSet[i].Fire(numOfData,&dct.TaskSet)
-            }
-        }
+   
+   // // for !dct.TasksComplete(){
+   //      go func(){
+   //          for i := 0; i < 5*size; i++{
+   //              if dct.TaskSet[i].TID != -1 {
+   //                  dct.TaskSet[i].Fire(numOfData,&dct.TaskSet)
+   //              }
+   //          }
+   //       }()
 
-    }
+   //  //}
+
 
     time.Sleep(100*time.Millisecond)
     fmt.Println(dct.TaskSet[0:5])
