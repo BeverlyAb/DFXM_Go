@@ -1,5 +1,5 @@
-// package depchantable
- package main
+package depchantable
+ // package main
 //https://www.golangprograms.com/constructors-in-golang.html
 import (
    "fmt"
@@ -106,13 +106,13 @@ func (dct DepChanTable)PrintDAGTable(){
 
 //test
 func main(){
-	var size int = 5
-	var percent int = 50
-	dct := new(DepChanTable)
+	// var size int = 5
+	// var percent int = 50
+	// dct := new(DepChanTable)
 
-	dct.Init(size,percent)
-	dct.CreateDAGTable()
-	dct.PrintDAGTable()
+	// dct.Init(size,percent)
+	// dct.CreateDAGTable()
+	// dct.PrintDAGTable()
 	
 // 	fmt.Println(dct.createSendTo(1))
 // 	fmt.Println(dct.createRecFrom(3))
