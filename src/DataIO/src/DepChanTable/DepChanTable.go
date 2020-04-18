@@ -11,7 +11,7 @@ import (
 
 type DepChanTable struct{
 	TaskSize int
-	TaskSet [] task.Task
+	TaskSet [100] task.Task
 	percentageOfCon int
 	DAGTable [100][100] int //rec x send
 } 
@@ -34,12 +34,15 @@ func (dct * DepChanTable)CreateDAGTable(){
 	} 
 }
 
-func (dct DepChanTable)CreateTaskSet(){
-
+//creates Tasks with personal send and receive 
+func (dct * DepChanTable)CreateTaskSet(){
+	for i := 0; i < dct.TaskSize; i++ {
+		dct.TaskSet[i] = task.Task{i,dct.createRecFrom(i),dct.createSendTo(i),0}
+	}
 }
 
 //creates an array of TIDs that the indexed task should send to
-func (dct DepChanTable)createSendTo(index int)[]int{
+func (dct * DepChanTable)createSendTo(index int)[]int{
 	sendTo := make([]int,dct.TaskSize)
 	k := 0
 	for i := 0; i < dct.TaskSize; i++ {
@@ -54,7 +57,7 @@ func (dct DepChanTable)createSendTo(index int)[]int{
 //creates map of TIDs that the indexed task should receive
 //data from. By default all value pair are set to false
 //since it has not received data from them
-func (dct DepChanTable)createRecFrom(index int)map[int]bool{
+func (dct * DepChanTable)createRecFrom(index int)map[int]bool{
 	recFrom := make(map[int]bool)
 	for j := 0; j < dct.TaskSize; j++ {
 		if dct.DAGTable[index][j] == 1{
@@ -81,6 +84,10 @@ func main(){
 	dct.Init(size,percent)
 	dct.CreateDAGTable()
 	dct.PrintDAGTable()
+	
 	fmt.Println(dct.createSendTo(1))
 	fmt.Println(dct.createRecFrom(3))
+	
+	dct.CreateTaskSet()
+	fmt.Println(dct.TaskSet[0:dct.TaskSize+1])
 }
