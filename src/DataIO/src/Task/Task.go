@@ -4,6 +4,8 @@ import (
     "fmt"
     "github.com/klauspost/cpuid"
     "data"
+    "math"
+    "time"
 )
 
 type Task struct{
@@ -92,6 +94,68 @@ func(t Task)DiscernChan(chanIn chan data.Data)bool{
     return false
 }
 
+
+func (t Task)Producer(iters int) <-chan data.Data {
+    c := make(chan data.Data)
+    go func() {
+        for i := 0; i < iters; i++ {
+            msg := int(math.Pow(10,float64(t.TID))) + t.DataOutMsg
+            c <- data.Data{msg,t.TID,0}
+            // fmt.Println("Fired:\tTID ", t.TID, "LogicalCPU ", cpuid.CPU.LogicalCPU(), "Data ", msg, "Orig Data ",t.DataOutMsg)
+            fmt.Println("TID ", t.TID, "Fired and Converted ", t.DataOutMsg, " to ",msg)
+            time.Sleep(1 * time.Second)
+        }
+        close(c)
+    }()
+    return c
+}
+
+func (t Task)Consumer(cin <-chan data.Data) {
+    for recData := range cin {
+            
+            msg := recData.Msg
+            senderID := recData.TID
+            senderCountID := recData.CountID
+
+
+            i := Find(t.DataDepVec, senderID) 
+            if i != len(t.DataDepVec){
+                if senderCountID == t.DataDepVec[i].CountID{
+                    t.DataDepVec[i].Msg = msg
+                    t.DepCount++
+                    t.DataOutMsg += msg
+                    // fmt.Println("Recvd:\tTID ", t.TID,  "LogicalCPU ", cpuid.CPU.LogicalCPU(), "NewData ", t.DataOutMsg,"Msg ID ", senderCountID)
+                    fmt.Println("TID ", t.TID, " Received  ",t.DataDepVec[i].Msg, " from TID ",senderID)
+                }
+            }
+
+
+        // fmt.Println("Msg ",recData.Msg, "SenderTID ",recData.TID, "MsgCount ",recData.CountID)
+    }
+
+
+}
+
+func (t Task)FanOutUnbuffered(ch <-chan data.Data, size int) []chan data.Data {
+    cs := make([]chan data.Data, size)
+    for i, _ := range cs {
+        // The size of the channels buffer controls how far behind the recievers
+        // of the fanOut channels can lag the other channels.
+        cs[i] = make(chan data.Data)
+    }
+    go func() {
+        for i := range ch {
+            for _, c := range cs {
+                c <- i
+            }
+        }
+        for _, c := range cs {
+            // close all our fanOut channels when the input channel is exhausted.
+            close(c)
+        }
+    }()
+    return cs
+}
 
 func PrintTask(t Task){
     //fmt.Println("TID ", t.TID, "CountID ",t.DataOutMsg, "LogicalCPU ",cpuid.CPU.LogicalCPU())
