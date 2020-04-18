@@ -16,7 +16,7 @@ import (
 
 
 func main(){
-    var size int = 5
+    var size int = 10
     var percent int = 50
     dct := new(depchantable.DepChanTable)
 
@@ -30,8 +30,10 @@ func main(){
     
     numOfData := 1
     go func (){
-        for i := 0; i < size; i++{
-            dct.TaskSet[i].Fire(numOfData, dct.TaskSet)
+        for j := 0; j < 30; j++ {
+            for i := 0; i < size; i++{
+                dct.TaskSet[i].Fire(numOfData, &dct.TaskSet)
+            }
         }
     }()
 

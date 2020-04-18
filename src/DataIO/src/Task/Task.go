@@ -18,11 +18,11 @@ type Task struct{
 } 
 
 //Tasks sends data and releases info
-func (t * Task)Fire(iters int, TaskSet [] Task) {
+func (t * Task)Fire(iters int, TaskSet * [] Task) {
     if t.readyToCompute(){
         mainChan := t.Producer(iters)
         chanSet := t.FanOutUnbuffered(mainChan,len(t.Send_to))
-        t.assignRecChan(chanSet, &TaskSet)
+        t.assignRecChan(chanSet, TaskSet)
     }   
 }
 
@@ -81,13 +81,12 @@ func (t * Task)FanOutUnbuffered(ch <-chan data.Data, size int) []chan data.Data 
 
 //assigns the channels on the receiving end after a task fires
 //and receivers consume data
-func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet * [] Task){
-    go func(){
-        for i := 0; i < len(t.Send_to); i++ {
-            (*TaskSet)[t.Send_to[i]].Consumer(chanSet[i], t.TID)
-            fmt.Println("Rec TID ",(*TaskSet)[t.Send_to[i]])
+func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet *  [] Task){
+     
+        for i := 0; i < len(chanSet); i++ {
+           go (*TaskSet)[t.Send_to[i]].Consumer(chanSet[i], t.TID)
         }
-    }()
+
 }
 
 //consumes data from channel and updates RecFrom
@@ -96,7 +95,7 @@ func (t * Task)Consumer(cin <-chan data.Data, senderTID int) {
         for recData := range cin {
              t.updateRecFrom(senderTID)
             // fmt.Println("TID ",t.TID, "Sent data to ",t.Send_to[i])
-            fmt.Println("TID ", t.TID, " Received  ",recData.Msg, " from TID ",recData.TID)
+           fmt.Println("TID ", t.TID, " Received  ",recData.Msg, " from TID ",recData.TID)
         }
     //}()
 }
