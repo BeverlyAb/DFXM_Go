@@ -6,7 +6,7 @@ package main
 ///https://play.golang.org/p/I-GA6DYd0HK //Fanout
 import (
     // "github.com/klauspost/cpuid"
-    // "time"
+    "time"
     // "task"
     // "data"
     "depchantable"
@@ -28,8 +28,11 @@ func main(){
     fmt.Println(dct.TaskSet[0:dct.TaskSize])
  
     numOfData := 1
-    for i := 0; i < size; i++{
-        dct.TaskSet[i].Fire(numOfData,dct.TaskSet)
+    for {
+        for i := 0; i < size; i++{
+            dct.TaskSet[i].Fire(numOfData,&dct.TaskSet)
+        }
+        fmt.Println(dct.TaskSet[0:size])
     }
-    
+    time.Sleep(100*time.Millisecond)
  }

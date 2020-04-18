@@ -45,15 +45,6 @@ func (t * Task)Producer(iters int) <-chan data.Data {
     return c
 }
 
-func (t * Task)Consumer(cin <-chan data.Data) {
-    for recData := range cin {
-            
-      fmt.Println("TID ", t.TID, " Received  ",recData.Msg, " from TID ",recData.TID)
-  }
-
-
-}
-
 //fans out channels which stem from firing tasks
 //# channels = size of Send_to 
 func (t Task)FanOutUnbuffered(ch <-chan data.Data, size int) []chan data.Data {
@@ -76,30 +67,41 @@ func (t Task)FanOutUnbuffered(ch <-chan data.Data, size int) []chan data.Data {
     }()
     return cs
 }
+//updates RecFrom from recevier view to indicate that the sender sent data and was received
+func (t * Task)updateRecFrom(senderTID int){
+    t.Rec_from[senderTID] = true
+}
+
+//consumes data from channel and updates RecFrom
+func (t * Task)Consumer(cin <-chan data.Data, senderTID int) {
+    for recData := range cin {
+        t.updateRecFrom(senderTID)
+        //fmt.Println("TID ",t.TID, "Sent data to ",t.Send_to[i])
+        fmt.Println("TID ", t.TID, " Received  ",recData.Msg, " from TID ",recData.TID)
+  }
+}
 
 //assigns the channels on the receiving end after a task fires
 //and receivers consume data
-func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet  [100] Task){
+func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet *  [100] Task){
     for i := 0; i < len(t.Send_to); i++ {
         //TaskSet[t.Send_to[i]] = chanSet[i]
-        TaskSet[t.Send_to[i]].Consumer(chanSet[i])
-        t.updateRecFrom(t.Send_to[i])
+        (TaskSet)[t.Send_to[i]].Consumer(chanSet[i], t.TID)
+        fmt.Println(TaskSet[0:5])
     }
 }
 
 //Tasks sends data and releases info
-func (t * Task)Fire(iters int, TaskSet [100] Task) {
+func (t * Task)Fire(iters int, TaskSet * [100] Task) {
     if t.readyToCompute(){
         mainChan := t.Producer(iters)
         chanSet := t.FanOutUnbuffered(mainChan,len(t.Send_to))
-        t.assignRecChan(chanSet, TaskSet)
+        t.assignRecChan(chanSet,  TaskSet)
     }   
 }
 
 
-func (t * Task)updateRecFrom(index int){
-    t.Rec_from[index] = true
-}
+
 // func (t Task)Init(TID int, recFrom map[int]bool, sendTo []int){
 //     t.TID = TID
 //     t.Rec_from = recFrom
