@@ -60,7 +60,7 @@ func (t Task)ReadyToCompute()bool{
 }
 
 //computes and fire
-func (t Task)Compute(c chan data.Data){
+func (t  Task)Compute(c chan data.Data){
     if t.ReadyToCompute(){
         t.DepCount = 0
 
@@ -95,7 +95,7 @@ func(t Task)DiscernChan(chanIn chan data.Data)bool{
 }
 
 
-func (t Task)Producer(iters int) <-chan data.Data {
+func (t * Task)Producer(iters int) <-chan data.Data {
     c := make(chan data.Data)
     go func() {
         for i := 0; i < iters; i++ {
@@ -110,7 +110,7 @@ func (t Task)Producer(iters int) <-chan data.Data {
     return c
 }
 
-func (t Task)Consumer(cin <-chan data.Data) {
+func (t * Task)Consumer(cin <-chan data.Data) {
     for recData := range cin {
             
             msg := recData.Msg
