@@ -17,24 +17,23 @@ import (
 
 
 func main(){
-    var size int = 19
+    var size int = 1800
     var percent int = 50
     dct := new(depchantable.DepChanTable)
 
     dct.Init(size,percent)
     dct.CreateDAGTable()
-    dct.PrintDAGTable()
+    //dct.PrintDAGTable()
 
     dct.CreateTaskSet()
-    fmt.Println(dct.TaskSet[0:dct.TaskSize])
+    //fmt.Println(dct.TaskSet[0:dct.TaskSize])
     
     runset := createRunSet(size) //slice
 
-    for ;keepRunning(runset);{    
+    for keepRunning(runset){    
         for i := 0; i < size; i++{
             if dct.TaskSet[i].Fire(&dct.TaskSet) && isInRunSet(runset,i){
                 updateRunSet(runset,i)
-                fmt.Println("TID ",i,"Fired")
             }
         }
     }           
@@ -59,7 +58,6 @@ func main(){
 func updateRunSet(runset  []int, index int){
     runset[index] = -1
     //runset = append(runset[:index],runset[index+1:]...)
-    fmt.Println(runset)
 }
 
 func isInRunSet(runset[] int,tid int)bool{
@@ -74,7 +72,6 @@ func isInRunSet(runset[] int,tid int)bool{
 func keepRunning(runset []int)bool{
     for _,tid := range runset{
         if tid != -1{
-            fmt.Println("TID : ",tid, "Still needs to run")
             return true
         }
     }
