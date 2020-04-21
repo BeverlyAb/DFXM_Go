@@ -20,18 +20,19 @@ type Task struct{
    // DataChan chan data.Data //communication channel
 } 
 
-//Tasks sends data and releases info
-func (t * Task)Fire(TaskSet * [] Task) {
+//Tasks sends data and releases info; returns bool to keep track of tasks
+//that still needs to fire
+func (t * Task)Fire(TaskSet * [] Task) bool{
     if t.readyToCompute(){
         done := make(chan bool)
         defer close(done)
         var buffer int = 1
         var fanOutSize int = len(t.Send_to)
         chanSet := fans.FanOut(done,buffer,fanOutSize,t.ComputeAndProduce())
-
-
         t.assignRecChan(chanSet, TaskSet)
+        return true
     }   
+    return false
 }
 
 //checks if task is ready to fire if all dependencies met
@@ -65,11 +66,6 @@ func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet *  [] Task){
         }
 
 }
-
-//consumes data from channel and updates RecFrom
-// func (t * Task)Consumer(cin <-chan data.Data, senderTID int) {
-//     t.updateRecFrom(senderTID)
-// }
 
 //updates RecFrom from recevier view to indicate that the sender sent data and was received
 func (t * Task)updateRecFrom(senderTID int){
