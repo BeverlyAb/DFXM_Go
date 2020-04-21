@@ -16,7 +16,8 @@ type Task struct{
     Rec_from map[int]bool   //TID_rec : Received?
     Send_to []int           //list of TID to send to
     PID int                 //Processor ID
-    DataRecvd [] data.Data  //list of Data received 
+    DataRecvd [] data.Data  //list of Data received
+    Timeout float64 
    // DataChan chan data.Data //communication channel
 } 
 
@@ -61,7 +62,7 @@ func (t * Task)ComputeAndProduce()data.Data{
 func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet *  [] Task){
      
         for i := 0; i < len(chanSet); i++ {
-           
+            //need to add dataRec here
             (*TaskSet)[t.Send_to[i]].updateRecFrom(t.TID)
         }
 
@@ -72,8 +73,5 @@ func (t * Task)updateRecFrom(senderTID int){
     t.Rec_from[senderTID] = true
 }
 
-// //changes TID to invalidate
-// func (t * Task)Invalidate(){
-//     t.TID = -1
-// }
+
 

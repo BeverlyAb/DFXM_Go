@@ -25,7 +25,7 @@ import(
 // }
 
 //creates single channel  (SOURCE/SENDER)
-func Source(done <-chan bool,nums ...data.Data)<-chan data.Data{
+func Source(done <-chan bool, nums ...data.Data)<-chan data.Data{
 	out := make(chan data.Data)
 	go func(){
 		for _, n := range nums{

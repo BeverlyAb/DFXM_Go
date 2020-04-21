@@ -17,7 +17,7 @@ import (
 
 
 func main(){
-    var size int = 1800
+    var size int = 18
     var percent int = 50
     dct := new(depchantable.DepChanTable)
 
@@ -53,8 +53,7 @@ func main(){
  }
 
 
-//removes task that has ran
-//why * isn't needed?
+//marks -1 for tasks that ran (why doesn't append truncate)
 func updateRunSet(runset  []int, index int){
     runset[index] = -1
     //runset = append(runset[:index],runset[index+1:]...)
