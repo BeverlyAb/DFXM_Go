@@ -1,5 +1,5 @@
-// package fans
-package main
+package fans
+// package main
 //pipeline to square numbers
 // https://blog.golang.org/pipelines
 // https://austburn.me/blog/a-better-fan-in-fan-out-example.html //fans

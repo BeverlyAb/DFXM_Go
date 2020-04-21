@@ -15,14 +15,20 @@ type Task struct{
     Rec_from map[int]bool   //TID_rec : Received?
     Send_to []int           //list of TID to send to
     PID int                 //Processor ID
+    DataRecvd [] data.Data  //list of Data received 
    // DataChan chan data.Data //communication channel
 } 
 
 //Tasks sends data and releases info
 func (t * Task)Fire(iters int, TaskSet * [] Task) {
     if t.readyToCompute(){
-        mainChan := t.Producer(iters)
-        chanSet := t.FanOutUnbuffered(mainChan,len(t.Send_to))
+        done := make(chan bool)
+        defer close(done)
+        var buffer int = 1
+        var fanOutSize int = len(t.Send_to)
+        chanSet := fans.FanOut(done,buffer,fanOutSize,t.ComputeAndProduce())
+
+
         t.assignRecChan(chanSet, TaskSet)
     }   
 }
@@ -38,6 +44,16 @@ func (t * Task)readyToCompute()bool{
         } 
     }
     return true
+}
+
+//compute some Task and produce single output
+func (t * Task)ComputeAndProduce(nums ...data.Data)data.Data{
+    msg := 0
+    for n := range nums {
+        msg = int(math.Pow(10,float64(t.TID)))*n
+    }
+    countID := 0
+    return data.Data{msg, t.TID, countID}
 }
 
 // //creates a channel for every type of data

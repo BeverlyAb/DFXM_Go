@@ -28,14 +28,7 @@ func main(){
     fmt.Println(dct.TaskSet[0:dct.TaskSize])
     fmt.Println("======================")    
     
-    numOfData := 1
-    go func (){
-        for j := 0; j < 30; j++ {
-            for i := 0; i < size; i++{
-                dct.TaskSet[i].Fire(numOfData, &dct.TaskSet)
-            }
-        }
-    }()
+
 
     time.Sleep(100*time.Millisecond)
     fmt.Println(dct.TaskSet[0:5])
