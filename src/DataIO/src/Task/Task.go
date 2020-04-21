@@ -7,6 +7,7 @@ import (
     "math"
     // "time"
     //"depchantable"
+    "fans"
 )
 
 type Task struct{

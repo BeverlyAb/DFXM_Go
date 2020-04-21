@@ -39,5 +39,4 @@ func main(){
 
     time.Sleep(100*time.Millisecond)
     fmt.Println(dct.TaskSet[0:5])
-
  }

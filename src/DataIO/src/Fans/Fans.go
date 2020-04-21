@@ -1,4 +1,4 @@
-package main
+package fans
 //pipeline to square numbers
 // https://blog.golang.org/pipelines
 // https://austburn.me/blog/a-better-fan-in-fan-out-example.html //fans
@@ -13,8 +13,6 @@ import(
 func main(){
 	done := make(chan bool)
 	defer close(done)
-
-
 	var buffer int = 1
 	var fanOutSize int = 10
 	go FanOut(done,buffer,fanOutSize,1)
