@@ -40,44 +40,44 @@ func (t * Task)readyToCompute()bool{
     return true
 }
 
-//creates a channel for every type of data
-func (t * Task)Producer(iters int) <-chan data.Data {
-    c := make(chan data.Data)
-    go func() {
-        for i := 0; i < iters; i++ {
-            msg := int(math.Pow(10,float64(t.TID)))
-            c <- data.Data{msg,t.TID,0}
-        //    fmt.Println("TID ", t.TID, "Fired and Converted ",msg) 
-        }
-        //t.Invalidate()  
-        close(c)
-    }()
+// //creates a channel for every type of data
+// func (t * Task)Producer(iters int) <-chan data.Data {
+//     c := make(chan data.Data)
+//     go func() {
+//         for i := 0; i < iters; i++ {
+//             msg := int(math.Pow(10,float64(t.TID)))
+//             c <- data.Data{msg,t.TID,0}
+//         //    fmt.Println("TID ", t.TID, "Fired and Converted ",msg) 
+//         }
+//         //t.Invalidate()  
+//         close(c)
+//     }()
     
-    return c
-}
+//     return c
+// }
 
-//fans out channels which stem from firing tasks
-//# channels = size of Send_to 
-func (t * Task)FanOutUnbuffered(ch <-chan data.Data, size int) []chan data.Data {
-    cs := make([]chan data.Data, size)
-    for i, _ := range cs {
-        // The size of the channels buffer controls how far behind the recievers
-        // of the fanOut channels can lag the other channels.
-        cs[i] = make(chan data.Data)
-    }
-    go func() {
-        for i := range ch {
-            for _, c := range cs {
-                c <- i
-            }
-        }
-        for _, c := range cs {
-            // close all our fanOut channels when the input channel is exhausted.
-            close(c)
-        }
-    }()
-    return cs
-}
+// //fans out channels which stem from firing tasks
+// //# channels = size of Send_to 
+// func (t * Task)FanOutUnbuffered(ch <-chan data.Data, size int) []chan data.Data {
+//     cs := make([]chan data.Data, size)
+//     for i, _ := range cs {
+//         // The size of the channels buffer controls how far behind the recievers
+//         // of the fanOut channels can lag the other channels.
+//         cs[i] = make(chan data.Data)
+//     }
+//     go func() {
+//         for i := range ch {
+//             for _, c := range cs {
+//                 c <- i
+//             }
+//         }
+//         for _, c := range cs {
+//             // close all our fanOut channels when the input channel is exhausted.
+//             close(c)
+//         }
+//     }()
+//     return cs
+// }
 
 
 //assigns the channels on the receiving end after a task fires
@@ -106,8 +106,8 @@ func (t * Task)updateRecFrom(senderTID int){
     t.Rec_from[senderTID] = true
 }
 
-//changes TID to invalidate
-func (t * Task)Invalidate(){
-    t.TID = -1
-}
+// //changes TID to invalidate
+// func (t * Task)Invalidate(){
+//     t.TID = -1
+// }
 
