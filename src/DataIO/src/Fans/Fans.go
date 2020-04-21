@@ -12,17 +12,17 @@ import(
 	"data"
 )
 
-func main(){
-	done := make(chan bool)
-	defer close(done)
-	var buffer int = 1
-	var fanOutSize int = 10
-	msg := 9000
-	tID := 0
-	countID := 0
-	go Prints(FanOut(done,buffer,fanOutSize,data.Data{msg,tID,countID}))
-	time.Sleep(100*time.Millisecond)	
-}
+// func main(){
+// 	done := make(chan bool)
+// 	defer close(done)
+// 	var buffer int = 1
+// 	var fanOutSize int = 10
+// 	msg := 9000
+// 	tID := 0
+// 	countID := 0
+// 	go Prints(FanOut(done,buffer,fanOutSize,data.Data{msg,tID,countID}))
+// 	time.Sleep(100*time.Millisecond)	
+// }
 
 //creates single channel  (SOURCE/SENDER)
 func Source(done <-chan bool,nums ...data.Data)<-chan data.Data{
@@ -85,7 +85,7 @@ func SplitChannel(dataCopy [] data.Data , chanSet []chan data.Data){
 
 //executes fanout channels and outputs channels with sent data
 func FanOut(done <- chan bool, buffer int, fanOutSize int, nums data.Data)[] chan data.Data{
-	defer timeTrack(time.Now(),"FanOut")
+	// defer timeTrack(time.Now(),"FanOut")
 
 	var chanSet []chan data.Data = GenFanOut(buffer, fanOutSize)
 	var src_chan <-chan data.Data = Source(done,nums)
