@@ -24,6 +24,16 @@ func Source(done <-chan bool,nums ...int)<-chan int{
 	return out
 }
 
+//creates a copy of data from source
+func CopySource(buffer int, src <-chan int, done <- chan bool)[]int{
+	out := make([]int,buffer)
+	
+	for i := 0; i < buffer; i++{
+		out[i] = <-src
+	}
+	return out
+}
+
 //creates channel with amount of elems on sender channel specified (fan generator)
 func GenFanOut(buffer int, fanOutSize int)[] chan int{
 	out := make([]chan int, fanOutSize) 
@@ -37,8 +47,8 @@ func GenFanOut(buffer int, fanOutSize int)[] chan int{
 }
 
 
-//read from source and pass single data to other channels (FANOUT)
-func SplitChannel(buffer int,in []chan int, sender <-chan int, done <-chan bool){
+//pass data copy to multiple channels (point to points)(FANOUT)
+func SplitChannel(dataCopy [] int , in []chan int){
 	
 	
 	// for i := 0; i < len(in); i++ {
@@ -50,25 +60,7 @@ func SplitChannel(buffer int,in []chan int, sender <-chan int, done <-chan bool)
 	// 		}
 	// 	}
 	// 	close(in[i])
-	// }
-	// tmpChan := make(chan int, buffer)
-	tmpArr := make([]int,buffer)
-	// for elem := range sender{
-	// 		select{
-	// 		case <-done:
-	// 			return
-	// 		case tmpChan <- elem:
-	// 		}
-	// 	}
-
-	fmt.Println(tmpArr)
-	for i := 0; i < len(in); i++ {
-		for elem := range tmpArr{
-			in[i] <- elem
-		}
-		close(in[i])
-	}
-	
+	// } 
 }
 
 
@@ -97,21 +89,24 @@ func main(){
 	done := make(chan bool)
 	defer close(done)
 
-	src_chan := Source(done,4,3,2,1)
+	src_chan := Source(done,14,123,12,11)
 	
 	var buffer int = 4
-	var fanOutSize int = 6
-	chanSet := GenFanOut(buffer, fanOutSize)
+	// var fanOutSize int = 6
 
-	SplitChannel(buffer, chanSet, src_chan, done)
+	fmt.Println(CopySource(buffer,src_chan,done))
+
+	//chanSet := GenFanOut(buffer, fanOutSize)
+
+	// SplitChannel(buffer, chanSet, src_chan, done)
 
 	 // Prints(chanSet)
-	Print(chanSet[0],0)
-	Print(chanSet[1],1)
-	Print(chanSet[2],2)
-	Print(chanSet[3],3)
-	Print(chanSet[4],4)
-	Print(chanSet[5],5)
+	// Print(chanSet[0],0)
+	// Print(chanSet[1],1)
+	// Print(chanSet[2],2)
+	// Print(chanSet[3],3)
+	// Print(chanSet[4],4)
+	// Print(chanSet[5],5)
 }
 
 /*The merge function converts a list of channels to a single channel by 
