@@ -14,7 +14,7 @@ func Source(done <-chan bool,nums ...int)<-chan int{
 		for _, n := range nums{
 			select{
 			case <-done:
-				return
+				return 
 			case out<-n:
 			}
 		}
@@ -28,13 +28,15 @@ func Source(done <-chan bool,nums ...int)<-chan int{
 func CopySource(buffer int, src <-chan int, done <- chan bool)[]int{
 	out := make([]int,buffer)
 
-	for i := 0; i < buffer; i++{
-		select{
-		case <-done:
-			return out
-		case out[i] = <-src:
+	func(){ 
+		for i := 0; i < buffer; i++{
+			select{
+			case <-done:
+				return 
+			case out[i] = <-src:
+			}
 		}
-	}
+	}()
 	return out
 }
 
@@ -54,11 +56,12 @@ func GenFanOut(buffer int, fanOutSize int)[] chan int{
 //pass data copy to multiple channels (point to points)(FANOUT)
 func SplitChannel(dataCopy [] int , chanSet []chan int){
 	
-	
+
 	for j := 0; j < len(chanSet); j++{
 		for i := 0; i < len(dataCopy); i++{
 			chanSet[j] <- dataCopy[i]
 		}
+		close(chanSet[j])
 	}
 	
 }
@@ -66,16 +69,10 @@ func SplitChannel(dataCopy [] int , chanSet []chan int){
 
 func Prints(out []chan int){
 
-	// for i,_ := range out {
-	// 	for n := range out[i]{
-	// 		fmt.Println(i, ": ",n)
-	// 	} 
-	// }
-
-	for i := 0; i < len(out); i++{
-		for j := 0; j < len(out[i]); j++{
-			Print(out[j],i)
-		}
+	for i,_ := range out {
+		for n := range out[i]{
+			fmt.Println(i, ": ",n)
+		} 
 	}
 }
 
@@ -97,11 +94,9 @@ func main(){
 	dataCopy := CopySource(buffer,src_chan,done)
 
 	chanSet := GenFanOut(buffer, fanOutSize)
-
-//func SplitChannel(dataCopy [] int , chanSet []chan int){
 	SplitChannel(dataCopy, chanSet)
+	Prints(chanSet)
 
-	 Prints(chanSet)
 	// Print(chanSet[0],0)
 	// Print(chanSet[1],1)
 	// Print(chanSet[2],2)
