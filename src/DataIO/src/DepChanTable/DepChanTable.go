@@ -5,6 +5,7 @@ import (
    "fmt"
    "task"
    "math/rand"
+   "data"
 )
 
 
@@ -35,7 +36,6 @@ func (dct * DepChanTable)CreateDAGTable(){
 	            tmp = append(tmp, 0)
 	      }
 	    dct.DAGTable = append(dct.DAGTable, tmp)
-
 	} 
 	
 	for i := 0; i < dct.TaskSize; i++ {
@@ -51,7 +51,12 @@ func (dct * DepChanTable)CreateDAGTable(){
 //creates Tasks with personal send and receive 
 func (dct * DepChanTable)CreateTaskSet(){
 	for i := 0; i < dct.TaskSize; i++ {
-		dct.TaskSet[i] = task.Task{i,dct.createRecFrom(i),dct.createSendTo(i),0}
+		tID := i
+		var rec_from map[int] bool = dct.createRecFrom(i)
+		var send_to []int = dct.createSendTo(i)
+		pID := 0
+		var dataRecvd [] data.Data
+		dct.TaskSet[i] = task.Task{tID, rec_from, send_to,pID, dataRecvd}
 	}
 }
 
