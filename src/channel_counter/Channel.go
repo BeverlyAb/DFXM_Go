@@ -7,7 +7,7 @@ import(
 	"fmt"
 )
 
-//create single channel spitting out integers (SENDER)
+//creates single channel  (SOURCE/SENDER)
 func Source(done <-chan bool,nums ...int)<-chan int{
 	out := make(chan int)
 	go func(){
@@ -66,7 +66,7 @@ func SplitChannel(dataCopy [] int , chanSet []chan int){
 	
 }
 
-
+//prints all chan set
 func Prints(out []chan int){
 
 	for i,_ := range out {
@@ -76,33 +76,30 @@ func Prints(out []chan int){
 	}
 }
 
+//prints single channel
 func Print(out chan int, index int){
 	for n := range out{
 		fmt.Println(index, " : ",n)
 	}
 }
 
+//executes fanout channels
+func FanOut(done <- chan bool, buffer int, fanOutSize int, nums int){
+	var chanSet []chan int = GenFanOut(buffer, fanOutSize)
+	var src_chan <-chan int = Source(done,nums)
+	var dataCopy [] int = CopySource(buffer,src_chan,done)
+	SplitChannel(dataCopy, chanSet)
+	Prints(chanSet)
+}
+
 func main(){
 	done := make(chan bool)
 	defer close(done)
 
-	src_chan := Source(done,14,123,12,11)
-	
-	var buffer int = 4
-	var fanOutSize int = 6
 
-	dataCopy := CopySource(buffer,src_chan,done)
-
-	chanSet := GenFanOut(buffer, fanOutSize)
-	SplitChannel(dataCopy, chanSet)
-	Prints(chanSet)
-
-	// Print(chanSet[0],0)
-	// Print(chanSet[1],1)
-	// Print(chanSet[2],2)
-	// Print(chanSet[3],3)
-	// Print(chanSet[4],4)
-	// Print(chanSet[5],5)
+	var buffer int = 1
+	var fanOutSize int = 10
+	FanOut(done,buffer,fanOutSize,1)	
 }
 
 /*The merge function converts a list of channels to a single channel by 
