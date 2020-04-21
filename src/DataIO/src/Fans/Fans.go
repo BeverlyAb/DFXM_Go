@@ -18,9 +18,9 @@ func main(){
 	var buffer int = 1
 	var fanOutSize int = 10
 	msg := 9000
-	TID := 0
-	CountID := 0
-	go Prints(FanOut(done,buffer,fanOutSize,data.Data{msg,TID,CountID}))
+	tID := 0
+	countID := 0
+	go Prints(FanOut(done,buffer,fanOutSize,data.Data{msg,tID,countID}))
 	time.Sleep(100*time.Millisecond)	
 }
 

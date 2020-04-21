@@ -16,7 +16,7 @@ import (
 
 
 func main(){
-    var size int = 10
+    var size int = 5
     var percent int = 50
     dct := new(depchantable.DepChanTable)
 
@@ -31,5 +31,4 @@ func main(){
 
 
     time.Sleep(100*time.Millisecond)
-    fmt.Println(dct.TaskSet[0:5])
  }

@@ -47,10 +47,10 @@ func (t * Task)readyToCompute()bool{
 }
 
 //compute some Task and produce single output
-func (t * Task)ComputeAndProduce(nums ...data.Data)data.Data{
-    msg := 0
-    for n := range nums {
-        msg = int(math.Pow(10,float64(t.TID)))*n
+func (t * Task)ComputeAndProduce()data.Data{
+    var msg int
+    for i := 0; i < len(t.DataRecvd); i++ {
+        msg = int(math.Pow(10,float64(t.TID)))*t.DataRecvd[i].Msg
     }
     countID := 0
     return data.Data{msg, t.TID, countID}
