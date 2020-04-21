@@ -52,19 +52,15 @@ func GenFanOut(buffer int, fanOutSize int)[] chan int{
 
 
 //pass data copy to multiple channels (point to points)(FANOUT)
-func SplitChannel(dataCopy [] int , in []chan int){
+func SplitChannel(dataCopy [] int , chanSet []chan int){
 	
 	
-	// for i := 0; i < len(in); i++ {
-	// 	for elem := range sender{
-	// 		select{
-	// 		case <-done:
-	// 			return
-	// 		case in[i] <-elem:
-	// 		}
-	// 	}
-	// 	close(in[i])
-	// } 
+	for j := 0; j < len(chanSet); j++{
+		for i := 0; i < len(dataCopy); i++{
+			chanSet[j] <- dataCopy[i]
+		}
+	}
+	
 }
 
 
@@ -77,8 +73,8 @@ func Prints(out []chan int){
 	// }
 
 	for i := 0; i < len(out); i++{
-		for j := 0; j < len(out[j]); j++{
-			fmt.Println(i," : ",j)
+		for j := 0; j < len(out[i]); j++{
+			Print(out[j],i)
 		}
 	}
 }
@@ -96,15 +92,16 @@ func main(){
 	src_chan := Source(done,14,123,12,11)
 	
 	var buffer int = 4
-	// var fanOutSize int = 6
+	var fanOutSize int = 6
 
-	fmt.Println(CopySource(buffer,src_chan,done))
+	dataCopy := CopySource(buffer,src_chan,done)
 
-	//chanSet := GenFanOut(buffer, fanOutSize)
+	chanSet := GenFanOut(buffer, fanOutSize)
 
-	// SplitChannel(buffer, chanSet, src_chan, done)
+//func SplitChannel(dataCopy [] int , chanSet []chan int){
+	SplitChannel(dataCopy, chanSet)
 
-	 // Prints(chanSet)
+	 Prints(chanSet)
 	// Print(chanSet[0],0)
 	// Print(chanSet[1],1)
 	// Print(chanSet[2],2)
