@@ -27,9 +27,13 @@ func Source(done <-chan bool,nums ...int)<-chan int{
 //creates a copy of data from source
 func CopySource(buffer int, src <-chan int, done <- chan bool)[]int{
 	out := make([]int,buffer)
-	
+
 	for i := 0; i < buffer; i++{
-		out[i] = <-src
+		select{
+		case <-done:
+			return out
+		case out[i] = <-src:
+		}
 	}
 	return out
 }
