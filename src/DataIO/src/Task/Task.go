@@ -21,7 +21,7 @@ type Task struct{
 } 
 
 //Tasks sends data and releases info
-func (t * Task)Fire(iters int, TaskSet * [] Task) {
+func (t * Task)Fire(TaskSet * [] Task) {
     if t.readyToCompute(){
         done := make(chan bool)
         defer close(done)
@@ -36,13 +36,11 @@ func (t * Task)Fire(iters int, TaskSet * [] Task) {
 
 //checks if task is ready to fire if all dependencies met
 func (t * Task)readyToCompute()bool{
-    if len(t.Rec_from) == 0 {
-        return true
-    } 
-    for i := 0; i < len(t.Rec_from); i++ {
-        if !t.Rec_from[i]{
+    for _,element := range t.Rec_from{
+        if !element {
+            fmt.Println(element)
             return false
-        } 
+        }
     }
     return true
 }
@@ -54,7 +52,6 @@ func (t * Task)ComputeAndProduce()data.Data{
         msg = int(math.Pow(10,float64(t.TID)))*t.DataRecvd[i].Msg
     }
     countID := 0
-    fmt.Println("TID ",t.TID," Fired")
     return data.Data{msg, t.TID, countID}
 }
 
@@ -63,7 +60,8 @@ func (t * Task)ComputeAndProduce()data.Data{
 func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet *  [] Task){
      
         for i := 0; i < len(chanSet); i++ {
-           go (*TaskSet)[t.Send_to[i]].updateRecFrom(t.TID)
+           
+            (*TaskSet)[t.Send_to[i]].updateRecFrom(t.TID)
         }
 
 }
