@@ -51,32 +51,45 @@ func SplitChannel(buffer int,in []chan int, sender <-chan int, done <-chan bool)
 	// 	}
 	// 	close(in[i])
 	// }
-	tmpChan := make(chan int, buffer)
+	// tmpChan := make(chan int, buffer)
 	tmpArr := make([]int,buffer)
-	for elem := range sender{
-			select{
-			case <-done:
-				return
-			case tmpChan <- elem:
-			}
-		}
+	// for elem := range sender{
+	// 		select{
+	// 		case <-done:
+	// 			return
+	// 		case tmpChan <- elem:
+	// 		}
+	// 	}
 
-		
+	fmt.Println(tmpArr)
 	for i := 0; i < len(in); i++ {
 		for elem := range tmpArr{
 			in[i] <- elem
 		}
 		close(in[i])
 	}
+	
 }
 
 
-func Print(out []chan int){
+func Prints(out []chan int){
 
-	for i,_ := range out {
-		for n := range out[i]{
-			fmt.Println(n)
-		} 
+	// for i,_ := range out {
+	// 	for n := range out[i]{
+	// 		fmt.Println(i, ": ",n)
+	// 	} 
+	// }
+
+	for i := 0; i < len(out); i++{
+		for j := 0; j < len(out[j]); j++{
+			fmt.Println(i," : ",j)
+		}
+	}
+}
+
+func Print(out chan int, index int){
+	for n := range out{
+		fmt.Println(index, " : ",n)
 	}
 }
 
@@ -92,7 +105,13 @@ func main(){
 
 	SplitChannel(buffer, chanSet, src_chan, done)
 
-	Print(chanSet)
+	 // Prints(chanSet)
+	Print(chanSet[0],0)
+	Print(chanSet[1],1)
+	Print(chanSet[2],2)
+	Print(chanSet[3],3)
+	Print(chanSet[4],4)
+	Print(chanSet[5],5)
 }
 
 /*The merge function converts a list of channels to a single channel by 
