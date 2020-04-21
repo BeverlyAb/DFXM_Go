@@ -38,28 +38,46 @@ func GenFanOut(buffer int, fanOutSize int)[] chan int{
 
 
 //read from source and pass single data to other channels (FANOUT)
-func SplitChannel(in []chan int, sender <-chan int, done <-chan bool){
+func SplitChannel(buffer int,in []chan int, sender <-chan int, done <-chan bool){
 	
 	
-	for i := 0; i < len(in); i++ {
-		for elem := range sender{
+	// for i := 0; i < len(in); i++ {
+	// 	for elem := range sender{
+	// 		select{
+	// 		case <-done:
+	// 			return
+	// 		case in[i] <-elem:
+	// 		}
+	// 	}
+	// 	close(in[i])
+	// }
+	tmpChan := make(chan int, buffer)
+	tmpArr := make([]int,buffer)
+	for elem := range sender{
 			select{
 			case <-done:
 				return
-			case in[i] <-elem:
+			case tmpChan <- elem:
 			}
+		}
+
+		
+	for i := 0; i < len(in); i++ {
+		for elem := range tmpArr{
+			in[i] <- elem
 		}
 		close(in[i])
 	}
-	
 }
 
 
-func Print(out chan int){
+func Print(out []chan int){
 
-	for n := range out{
-		fmt.Println(n)
-	} 
+	for i,_ := range out {
+		for n := range out[i]{
+			fmt.Println(n)
+		} 
+	}
 }
 
 func main(){
@@ -69,15 +87,12 @@ func main(){
 	src_chan := Source(done,4,3,2,1)
 	
 	var buffer int = 4
-	var fanOutSize int = 3
+	var fanOutSize int = 6
 	chanSet := GenFanOut(buffer, fanOutSize)
 
-	SplitChannel(chanSet, src_chan, done)
+	SplitChannel(buffer, chanSet, src_chan, done)
 
-	Print(chanSet[0])
-	Print(chanSet[1])
-	Print(chanSet[2])
-	fmt.Println("sup")
+	Print(chanSet)
 }
 
 /*The merge function converts a list of channels to a single channel by 
