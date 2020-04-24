@@ -51,10 +51,11 @@ func (t * Task)readyToCompute()bool{
 func (t * Task)ComputeAndProduce()data.Data{
     var msg int
     for i := 0; i < len(t.DataRecvd); i++ {
-        msg = int(math.Pow(10,float64(t.TID)))*t.DataRecvd[i].Msg
-        fmt.Println("TID ",t.TID,"produced ",msg)
+        msg += t.DataRecvd[i].Msg
     }
-    countID := msg +1
+    msg += int(math.Pow(10,float64(t.TID)))
+    countID := 0
+    fmt.Println("TID ",t.TID,"produced ",msg)
     return data.Data{msg, t.TID, countID}
 }
 
