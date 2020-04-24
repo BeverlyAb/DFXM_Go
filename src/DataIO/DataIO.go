@@ -17,13 +17,13 @@ import (
 
 
 func main(){
-    var size int = 18
+    var size int = 8
     var percent int = 50
     dct := new(depchantable.DepChanTable)
 
     dct.Init(size,percent)
     dct.CreateDAGTable()
-    //dct.PrintDAGTable()
+    dct.PrintDAGTable()
 
     dct.CreateTaskSet()
     //fmt.Println(dct.TaskSet[0:dct.TaskSize])

@@ -52,8 +52,9 @@ func (t * Task)ComputeAndProduce()data.Data{
     var msg int
     for i := 0; i < len(t.DataRecvd); i++ {
         msg = int(math.Pow(10,float64(t.TID)))*t.DataRecvd[i].Msg
+        fmt.Println("TID ",t.TID,"produced ",msg)
     }
-    countID := 0
+    countID := msg +1
     return data.Data{msg, t.TID, countID}
 }
 
@@ -62,7 +63,7 @@ func (t * Task)ComputeAndProduce()data.Data{
 func (t * Task)assignRecChan(chanSet []chan data.Data, TaskSet *  [] Task){
      
         for i := 0; i < len(chanSet); i++ {
-            //need to add dataRec here
+            t.recData(&(*TaskSet)[t.Send_to[i]], chanSet[i])
             (*TaskSet)[t.Send_to[i]].updateRecFrom(t.TID)
         }
 
@@ -73,5 +74,10 @@ func (t * Task)updateRecFrom(senderTID int){
     t.Rec_from[senderTID] = true
 }
 
-
+func (t * Task)recData(receiver * Task, in chan data.Data){
+    for elem := range in {
+        receiver.DataRecvd = append(receiver.DataRecvd, elem) 
+         fmt.Println("TID ",receiver.TID, ": ", elem)
+    } 
+}
 
