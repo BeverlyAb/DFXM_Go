@@ -32,7 +32,11 @@ func Source(done <-chan bool, nums ...data.Data)<-chan data.Data{
 			select{
 			case <-done:
 				return 
+			case <-time.After(time.Nanosecond):
+				fmt.Println("timeout")
+				return
 			case out<-n:
+				fmt.Println("nums")
 			}
 		}
 		close(out)
@@ -49,6 +53,9 @@ func CopySource(buffer int, src <-chan data.Data, done <- chan bool)[]data.Data{
 		for i := 0; i < buffer; i++{
 			select{
 			case <-done:
+				return
+			case <-time.After(time.Nanosecond):
+				fmt.Println("timeout")
 				return 
 			case out[i] = <-src:
 			}

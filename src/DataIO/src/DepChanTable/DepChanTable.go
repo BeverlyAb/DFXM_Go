@@ -6,10 +6,11 @@ import (
    "task"
    "math/rand"
    "data"
+   "time"
 )
 
 
-type DepChanTable struct{ //100 is MAX (how to set macro?)
+type DepChanTable struct{ 
 	TaskSize int
 	TaskSet [] task.Task
 	percentageOfCon int
@@ -56,7 +57,7 @@ func (dct * DepChanTable)CreateTaskSet(){
 		var send_to []int = dct.createSendTo(i)
 		pID := 0
 		var dataRecvd [] data.Data
-		var timeout float64 = 0.005
+		var timeout time.Duration = time.Second//5 * time.Nanosecond 
 		dct.TaskSet[i] = task.Task{tID, rec_from, send_to,pID, dataRecvd, timeout}
 	}
 }

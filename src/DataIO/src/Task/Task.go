@@ -6,7 +6,7 @@ import (
     // "github.com/klauspost/cpuid"
     "data"
     "math"
-    // "time"
+    "time"
     //"depchantable"
     "fans"
 )
@@ -17,7 +17,7 @@ type Task struct{
     Send_to []int           //list of TID to send to
     PID int                 //Processor ID
     DataRecvd [] data.Data  //list of Data received
-    Timeout float64 
+    Timeout time.Duration 
    // DataChan chan data.Data //communication channel
 } 
 
@@ -27,6 +27,7 @@ func (t * Task)Fire(TaskSet * [] Task) bool{
     if t.readyToCompute(){
         done := make(chan bool)
         defer close(done)
+
         var buffer int = 1
         var fanOutSize int = len(t.Send_to)
         chanSet := fans.FanOut(done,buffer,fanOutSize,t.ComputeAndProduce())
@@ -55,7 +56,10 @@ func (t * Task)ComputeAndProduce()data.Data{
     }
     msg += int(math.Pow(10,float64(t.TID)))
     countID := 0
-    fmt.Println("TID ",t.TID,"produced ",msg)
+    if t.TID == 4 {
+        time.Sleep(time.Second*3)
+    } 
+
     return data.Data{msg, t.TID, countID}
 }
 
@@ -78,7 +82,6 @@ func (t * Task)updateRecFrom(senderTID int){
 func (t * Task)recData(receiver * Task, in chan data.Data){
     for elem := range in {
         receiver.DataRecvd = append(receiver.DataRecvd, elem) 
-         fmt.Println("TID ",receiver.TID, ": ", elem)
     } 
 }
 
