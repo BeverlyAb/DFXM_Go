@@ -2,7 +2,7 @@ package task
 //https://medium.com/a-journey-with-go/go-concurrency-access-with-maps-part-iii-8c0a0e4eb27e
 //concurrent map writes when timeTrack is removed
 import (
-    "fmt"
+    // "fmt"
     // "github.com/klauspost/cpuid"
     "data"
     "math"
@@ -30,7 +30,16 @@ func (t * Task)Fire(TaskSet * [] Task) bool{
 
         var buffer int = 1
         var fanOutSize int = len(t.Send_to)
-        chanSet := fans.FanOut(done,buffer,fanOutSize,t.ComputeAndProduce())
+        var timeOut time.Duration = t.Timeout
+
+        chanSet, refire := fans.FanOut( done,buffer,
+                                        fanOutSize,
+                                        timeOut, 
+                                        t.ComputeAndProduce())
+        if refire{
+            t.Timeout *= 2
+            return false
+        }
         t.assignRecChan(chanSet, TaskSet)
         return true
     }   
@@ -41,7 +50,6 @@ func (t * Task)Fire(TaskSet * [] Task) bool{
 func (t * Task)readyToCompute()bool{
     for _,element := range t.Rec_from{
         if !element {
-            fmt.Println(element)
             return false
         }
     }
@@ -56,9 +64,6 @@ func (t * Task)ComputeAndProduce()data.Data{
     }
     msg += int(math.Pow(10,float64(t.TID)))
     countID := 0
-    if t.TID == 4 {
-        time.Sleep(time.Second*3)
-    } 
 
     return data.Data{msg, t.TID, countID}
 }

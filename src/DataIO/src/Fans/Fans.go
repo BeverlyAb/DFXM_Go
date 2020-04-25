@@ -25,24 +25,28 @@ import(
 // }
 
 //creates single channel  (SOURCE/SENDER)
-func Source(done <-chan bool, nums ...data.Data)<-chan data.Data{
+func Source(done <-chan bool, 
+			timeout time.Duration,
+			nums ...data.Data)(<-chan data.Data,bool){
 	out := make(chan data.Data)
+	var hasTimedOut bool = false
+	
 	go func(){
 		for _, n := range nums{
 			select{
 			case <-done:
+				hasTimedOut = true
 				return 
-			case <-time.After(time.Nanosecond):
-				fmt.Println("timeout")
+			case <-time.After(timeout):
+				fmt.Println("timeout1 ", timeout)
+				hasTimedOut = true
 				return
 			case out<-n:
-				fmt.Println("nums")
 			}
 		}
 		close(out)
 	}()
-	
-	return out
+	return out, hasTimedOut
 }
 
 //creates a copy of data from source
@@ -54,9 +58,6 @@ func CopySource(buffer int, src <-chan data.Data, done <- chan bool)[]data.Data{
 			select{
 			case <-done:
 				return
-			case <-time.After(time.Nanosecond):
-				fmt.Println("timeout")
-				return 
 			case out[i] = <-src:
 			}
 		}
@@ -91,14 +92,21 @@ func SplitChannel(dataCopy [] data.Data , chanSet []chan data.Data){
 }
 
 //executes fanout channels and outputs channels with sent data
-func FanOut(done <- chan bool, buffer int, fanOutSize int, nums data.Data)[] chan data.Data{
+func FanOut(done <- chan bool, 
+			buffer int, 
+			fanOutSize int, 
+			timeOut time.Duration, 
+			nums data.Data) ([] chan data.Data, bool){
 	// defer timeTrack(time.Now(),"FanOut")
 
 	var chanSet []chan data.Data = GenFanOut(buffer, fanOutSize)
-	var src_chan <-chan data.Data = Source(done,nums)
-	var dataCopy [] data.Data = CopySource(buffer,src_chan,done)
-	SplitChannel(dataCopy, chanSet)
-	return chanSet
+	// var src_chan <-chan data.Data var refire bool = Source(done,nums)
+	src_chan, refire := Source(done, timeOut, nums)
+	if !refire{
+		var dataCopy [] data.Data = CopySource(buffer,src_chan,done)
+		SplitChannel(dataCopy, chanSet)
+	}
+	return chanSet, refire
 }
 //==========================Time==================================
 func timeTrack(start time.Time, name string) {

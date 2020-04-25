@@ -57,7 +57,7 @@ func (dct * DepChanTable)CreateTaskSet(){
 		var send_to []int = dct.createSendTo(i)
 		pID := 0
 		var dataRecvd [] data.Data
-		var timeout time.Duration = time.Second//5 * time.Nanosecond 
+		var timeout time.Duration = 5 * time.Nanosecond 
 		dct.TaskSet[i] = task.Task{tID, rec_from, send_to,pID, dataRecvd, timeout}
 	}
 }
