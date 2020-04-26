@@ -60,13 +60,13 @@ func (dct * DepChanTable)CreateTaskSet(){
 		pID := 0
 		var dataRecvd [] data.Data
 		var timeout time.Duration = dct.Timeout
-		var refireCount int = 0
+		var recomputeCount int = 0
 		dct.TaskSet[i] = task.Task{	tID, 
 									rec_from, 
 									send_to,pID, 
 									dataRecvd, 
 									timeout, 
-									refireCount}
+									recomputeCount}
 	}
 }
 

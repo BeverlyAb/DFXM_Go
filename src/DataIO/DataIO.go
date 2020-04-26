@@ -8,33 +8,38 @@ package main
 import (
     // "github.com/klauspost/cpuid"
     "time"
-    // "task"
-    // "data"
     "depchantable"
     "fmt"
+    "faulthandler"
 )
 
 
 
 func main(){
-    var size int = 8
+    var totalTaskSize int = 8
     var percent int = 50
     var defaultTimeout = time.Millisecond * 50
+    //synthetic problem DAG
     dct := new(depchantable.DepChanTable)
-
-    dct.Init(size,percent,defaultTimeout)
+    dct.Init(totalTaskSize,percent,defaultTimeout)
     dct.CreateDAGTable()
     dct.PrintDAGTable()
 
+    //generate Task Set
     dct.CreateTaskSet()
-    //fmt.Println(dct.TaskSet[0:dct.TaskSize])
     
-    runset := createRunSet(size) //slice
+    //Creating Tasks that compute over the timeout
+    var recompSize int = 5
+    faulthandler := new(faulthandler.FaultHandler)
+    faulthandler.Init()
+    faulthandler.SetReComputeList(totalTaskSize,recompSize,defaultTimeout)
+
+    runset := createRunSet(totalTaskSize) //slice
 
     for keepRunning(runset){    
-        for i := 0; i < size; i++{
+        for i := 0; i < totalTaskSize; i++{
             if isInRunSet(runset,i){
-                if dct.TaskSet[i].Fire(&dct.TaskSet) {
+                if dct.TaskSet[i].Fire(&dct.TaskSet,faulthandler) {
                     updateRunSet(runset,i)
                 }
             }

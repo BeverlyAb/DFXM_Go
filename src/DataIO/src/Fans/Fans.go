@@ -87,14 +87,14 @@ func SplitChannel(dataCopy [] data.Data , chanSet []chan data.Data){
 func FanOut(done <- chan bool, 
 			buffer int, 
 			fanOutSize int, 
-			refire bool,
+			recompute bool,
 			nums data.Data) ([] chan data.Data){
 	// defer timeTrack(time.Now(),"FanOut")
 
 	var chanSet []chan data.Data = GenFanOut(buffer, fanOutSize)
-	// var src_chan <-chan data.Data var refire bool = Source(done,nums)
+	// var src_chan <-chan data.Data var recompute bool = Source(done,nums)
 	src_chan := Source(done, nums)
-	if !refire{
+	if !recompute{
 		var dataCopy [] data.Data = CopySource(buffer,src_chan,done)
 		SplitChannel(dataCopy, chanSet)
 	}

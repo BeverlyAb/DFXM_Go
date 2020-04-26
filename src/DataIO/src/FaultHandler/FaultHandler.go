@@ -1,5 +1,5 @@
-// package faulthandler
-package main
+package faulthandler
+// package main
 import(
 	"fmt"
 	"time"
@@ -36,12 +36,12 @@ func (f * FaultHandler)InsertRecompute(tid int){
 	} 
 }
 
-func main(){
-	var totatTaskSize int = 10
-	var recompSize int = 5
-	var defaultTimeout = time.Millisecond * 50
+// func main(){
+// 	var totatTaskSize int = 10
+// 	var recompSize int = 5
+// 	var defaultTimeout = time.Millisecond * 50
 
-	faulthandler := new(FaultHandler)
-	faulthandler.Init()
-	faulthandler.SetReComputeList(totatTaskSize,recompSize,defaultTimeout)
-}
+// 	faulthandler := new(FaultHandler)
+// 	faulthandler.Init()
+// 	faulthandler.SetReComputeList(totatTaskSize,recompSize,defaultTimeout)
+// }

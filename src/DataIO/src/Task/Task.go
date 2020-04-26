@@ -9,6 +9,7 @@ import (
     "time"
     "fans"
     "timeout"
+    "faulthandler"
 )
 
 type Task struct{
@@ -18,19 +19,19 @@ type Task struct{
     PID int                 //Processor ID
     DataRecvd [] data.Data  //list of Data received
     Timeout time.Duration 
-    recomputeCount int         //keeps track of recompute, used for Data's CountID
+    RecomputeCount int         //keeps track of recompute, used for Data's CountID
 } 
 
 //Tasks sends data and releases info; returns bool to keep track of tasks
 //that still needs to fire
-func (t * Task)Fire(TaskSet * [] Task) bool{
+func (t * Task)Fire(TaskSet * [] Task, FH * faulthandler.FaultHandler) bool{
     if t.readyToCompute(){
         done := make(chan bool)
         defer close(done)
 
         var buffer int = 1
         var fanOutSize int = len(t.Send_to)
-        dataOut, recompute := t.ComputeAndProduce()
+        dataOut, recompute := t.ComputeAndProduce(FH)
         chanSet:= fans.FanOut( done,buffer,
                                         fanOutSize,
                                         recompute, 
@@ -57,13 +58,13 @@ func (t * Task)readyToCompute()bool{
 }
 
 //compute some Task and produce single output
-func (t * Task)ComputeAndProduce()(data.Data,bool){
+func (t * Task)ComputeAndProduce(FH * faulthandler.FaultHandler)(data.Data,bool){
     tm := new(timeout.Timeout)
     tm.Init(t.Timeout)
-  // // inserting long computation or busy computation
-  //   if t.TID == 5 {
-  //       time.Sleep(time.Millisecond*70)
-  //   }
+
+    //inserting long computation
+    FH.InsertRecompute(t.TID)
+
     var msg int
     //include !dead = dead will always be true
     for i := 0; i < len(t.DataRecvd) && !tm.HasTimedOut; i++ {
@@ -74,9 +75,9 @@ func (t * Task)ComputeAndProduce()(data.Data,bool){
 
     msg += int(math.Pow(10,float64(t.TID)))
     if tm.HasTimedOut{
-        t.recomputeCount++
+        t.RecomputeCount++
     }
-    countID := t.recomputeCount
+    countID := t.RecomputeCount
     return data.Data{msg, t.TID, countID}, tm.HasTimedOut
 }
 
@@ -96,6 +97,7 @@ func (t * Task)updateRecFrom(senderTID int){
     t.Rec_from[senderTID] = true
 }
 
+//add data from sender to recevier's RecData
 func (t * Task)recData(receiver * Task, in chan data.Data){
     for elem := range in {
         receiver.DataRecvd = append(receiver.DataRecvd, elem) 
