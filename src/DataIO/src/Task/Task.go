@@ -62,12 +62,15 @@ func (t * Task)ComputeAndProduce()(data.Data,bool){
     start := time.Now()
     elapsed := time.Now().Sub(start)
 
+   //inserting long computation or busy 
+   // if t.TID == 5 {
+   //      time.Sleep(time.Millisecond*70)
+   //  }
+
     for elapsed < t.Timeout {
         elapsed = time.Now().Sub(start) 
         
-        if t.TID == 4 {
-            time.Sleep(time.Millisecond*70)
-        }
+     
         for i := 0; i < len(t.DataRecvd); i++ {
            // fmt.Println("meow", time.Now().Sub(start), elapsed)
             msg += t.DataRecvd[i].Msg
