@@ -27,14 +27,7 @@ func (t * Task)Fire(TaskSet * [] Task) bool{
     if t.readyToCompute(){
         done := make(chan bool)
         defer close(done)
-        start := time.Now()
-        select{
-            case <-time.After(t.Timeout):
-                fmt.Println("timeout",time.Now())
-            default:
-                fmt.Println("meow", time.Now().Sub(start))
-
-        }
+        dataOut := t.ComputeAndProduce()
 
         var buffer int = 1
         var fanOutSize int = len(t.Send_to)
@@ -43,7 +36,7 @@ func (t * Task)Fire(TaskSet * [] Task) bool{
         chanSet, refire := fans.FanOut( done,buffer,
                                         fanOutSize,
                                         timeOut, 
-                                        t.ComputeAndProduce())
+                                        dataOut)
         if refire{
             t.Timeout *= 2
             return false
@@ -68,7 +61,16 @@ func (t * Task)readyToCompute()bool{
 func (t * Task)ComputeAndProduce()data.Data{
     var msg int
     for i := 0; i < len(t.DataRecvd); i++ {
-        msg += t.DataRecvd[i].Msg
+        start := time.Now()
+        select{
+            case <-time.After(t.Timeout/1000):
+                fmt.Println("timeout",time.Now().Sub(start))
+                return data.Data{-1,t.TID,-1}
+            default:
+                fmt.Println("meow", time.Now().Sub(start))
+                msg += t.DataRecvd[i].Msg
+        }
+          
     }
     msg += int(math.Pow(10,float64(t.TID)))
     countID := 0
