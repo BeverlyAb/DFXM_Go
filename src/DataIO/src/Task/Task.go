@@ -70,7 +70,9 @@ func (t * Task)ComputeAndProduce()(data.Data,bool){
         elapsed = time.Now().Sub(start) 
     
         //do computation based on received data individually
-        msg += t.DataRecvd[i].Msg
+        //if t.DataRecvd[i].CountID == t.CountID{ //create matching countID
+            msg += t.DataRecvd[i].Msg
+        //}
     }
     msg += int(math.Pow(10,float64(t.TID)))
     slack := time.Millisecond*10
@@ -78,6 +80,7 @@ func (t * Task)ComputeAndProduce()(data.Data,bool){
     
     if hasTimedOut{
         t.RefireCount++
+        //notify receivers of my countID
     }
     countID := t.RefireCount
     
