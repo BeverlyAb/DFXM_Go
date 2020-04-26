@@ -19,7 +19,7 @@ import (
 func main(){
     var size int = 8
     var percent int = 50
-    var defaultTimeout = time.Millisecond *50
+    var defaultTimeout = time.Millisecond * 50
     dct := new(depchantable.DepChanTable)
 
     dct.Init(size,percent,defaultTimeout)

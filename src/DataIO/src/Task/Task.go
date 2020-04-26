@@ -2,7 +2,7 @@ package task
 //https://medium.com/a-journey-with-go/go-concurrency-access-with-maps-part-iii-8c0a0e4eb27e
 //concurrent map writes when timeTrack is removed
 import (
-    "fmt"
+    // "fmt"
     // "github.com/klauspost/cpuid"
     "data"
     "math"
@@ -18,7 +18,7 @@ type Task struct{
     PID int                 //Processor ID
     DataRecvd [] data.Data  //list of Data received
     Timeout time.Duration 
-   // DataChan chan data.Data //communication channel
+    RefireCount int         //keeps track of refire, used for Data's CountID
 } 
 
 //Tasks sends data and releases info; returns bool to keep track of tasks
@@ -62,26 +62,25 @@ func (t * Task)ComputeAndProduce()(data.Data,bool){
     start := time.Now()
     elapsed := time.Now().Sub(start)
 
-   //inserting long computation or busy 
+   //inserting long computation or busy computation
    // if t.TID == 5 {
    //      time.Sleep(time.Millisecond*70)
    //  }
-
-
     for i := 0; i < len(t.DataRecvd) && elapsed < t.Timeout; i++ {
         elapsed = time.Now().Sub(start) 
     
-        fmt.Println("meow", time.Now().Sub(start), elapsed)
+        //do computation based on received data individually
         msg += t.DataRecvd[i].Msg
     }
-
-         
     msg += int(math.Pow(10,float64(t.TID)))
-    countID := 0
     slack := time.Millisecond*10
-
     hasTimedOut :=  elapsed > t.Timeout + slack
-    fmt.Println("res ",t.TID,hasTimedOut,elapsed,t.Timeout+slack)
+    
+    if hasTimedOut{
+        t.RefireCount++
+    }
+    countID := t.RefireCount
+    
     return data.Data{msg, t.TID, countID}, hasTimedOut
 }
 
