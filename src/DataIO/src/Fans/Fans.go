@@ -26,28 +26,19 @@ import(
 
 //creates single channel  (SOURCE/SENDER)
 func Source(done <-chan bool, 
-			timeout time.Duration,
-			nums ...data.Data)(<-chan data.Data,bool){
+			nums ...data.Data)(<-chan data.Data){
 	out := make(chan data.Data)
-	var hasTimedOut bool = false
-	
 	go func(){
 		for _, n := range nums{
 			select{
 			case <-done:
-				fmt.Println("timeout1 ", timeout)
-				hasTimedOut = true
 				return 
-			// case <-time.After(timeout):
-			// 	fmt.Println("timeout2 ", timeout)
-			// 	hasTimedOut = true
-			// 	return
 			case out<-n:
 			}
 		}
 		close(out)
 	}()
-	return out, hasTimedOut
+	return out
 }
 
 //creates a copy of data from source
@@ -96,18 +87,18 @@ func SplitChannel(dataCopy [] data.Data , chanSet []chan data.Data){
 func FanOut(done <- chan bool, 
 			buffer int, 
 			fanOutSize int, 
-			timeOut time.Duration, 
-			nums data.Data) ([] chan data.Data, bool){
+			refire bool,
+			nums data.Data) ([] chan data.Data){
 	// defer timeTrack(time.Now(),"FanOut")
 
 	var chanSet []chan data.Data = GenFanOut(buffer, fanOutSize)
 	// var src_chan <-chan data.Data var refire bool = Source(done,nums)
-	src_chan, refire := Source(done, timeOut, nums)
+	src_chan := Source(done, nums)
 	if !refire{
 		var dataCopy [] data.Data = CopySource(buffer,src_chan,done)
 		SplitChannel(dataCopy, chanSet)
 	}
-	return chanSet, refire
+	return chanSet
 }
 //==========================Time==================================
 func timeTrack(start time.Time, name string) {

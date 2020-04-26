@@ -27,22 +27,21 @@ func (t * Task)Fire(TaskSet * [] Task) bool{
     if t.readyToCompute(){
         done := make(chan bool)
         defer close(done)
-        dataOut := t.ComputeAndProduce()
 
         var buffer int = 1
         var fanOutSize int = len(t.Send_to)
-        var timeOut time.Duration = t.Timeout
-
-        chanSet, refire := fans.FanOut( done,buffer,
+        dataOut, refire := t.ComputeAndProduce()
+        chanSet:= fans.FanOut( done,buffer,
                                         fanOutSize,
-                                        timeOut, 
+                                        refire, 
                                         dataOut)
-        if refire{
+        if refire {
             t.Timeout *= 2
             return false
+        } else {
+            t.assignRecChan(chanSet, TaskSet)
+            return true
         }
-        t.assignRecChan(chanSet, TaskSet)
-        return true
     }   
     return false
 }
@@ -58,7 +57,7 @@ func (t * Task)readyToCompute()bool{
 }
 
 //compute some Task and produce single output
-func (t * Task)ComputeAndProduce()data.Data{
+func (t * Task)ComputeAndProduce()(data.Data,bool){
     var msg int
     start := time.Now()
     for time.Now().Sub(start) < t.Timeout*1000 {
@@ -70,8 +69,8 @@ func (t * Task)ComputeAndProduce()data.Data{
           
     msg += int(math.Pow(10,float64(t.TID)))
     countID := 0
-
-    return data.Data{msg, t.TID, countID}
+    hasTimedOut :=  time.Now().Sub(start) < t.Timeout*1000
+    return data.Data{msg, t.TID, countID}, hasTimedOut
 }
 
 //assigns the channels on the receiving end after a task fires
