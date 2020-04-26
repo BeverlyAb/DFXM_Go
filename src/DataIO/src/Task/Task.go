@@ -58,32 +58,28 @@ func (t * Task)readyToCompute()bool{
 
 //compute some Task and produce single output
 func (t * Task)ComputeAndProduce()(data.Data,bool){
-    var msg int
     start := time.Now()
     elapsed := time.Now().Sub(start)
-
-   //inserting long computation or busy computation
+   
+//   // inserting long computation or busy computation
    // if t.TID == 5 {
    //      time.Sleep(time.Millisecond*70)
    //  }
-    for i := 0; i < len(t.DataRecvd) && elapsed < t.Timeout; i++ {
-        elapsed = time.Now().Sub(start) 
-    
+
+   var msg int
+   var hasTimedOut bool = elapsed > t.Timeout
+    for i := 0; i < len(t.DataRecvd) && !hasTimedOut; i++ {
+        elapsed = time.Now().Sub(start)
+        hasTimedOut = elapsed > t.Timeout  
         //do computation based on received data individually
-        //if t.DataRecvd[i].CountID == t.CountID{ //create matching countID
-            msg += t.DataRecvd[i].Msg
-        //}
+        msg += t.DataRecvd[i].Msg
     }
     msg += int(math.Pow(10,float64(t.TID)))
-    slack := time.Millisecond*10
-    hasTimedOut :=  elapsed > t.Timeout + slack
-    
+
     if hasTimedOut{
         t.RefireCount++
-        //notify receivers of my countID
     }
     countID := t.RefireCount
-    
     return data.Data{msg, t.TID, countID}, hasTimedOut
 }
 
