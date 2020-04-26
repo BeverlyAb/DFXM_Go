@@ -15,12 +15,14 @@ type DepChanTable struct{
 	TaskSet [] task.Task
 	percentageOfCon int
 	DAGTable [][] int //rec x send
+	Timeout time.Duration
 } 
 
 //init, percentageOfCon = % of forward directed edges
-func (dct * DepChanTable)Init(size int, percent int){
+func (dct * DepChanTable)Init(size int, percent int, timeout time.Duration){
 	dct.TaskSize = size
 	dct.percentageOfCon = percent
+	dct.Timeout = timeout
 	dct.TaskSet = make([]task.Task, dct.TaskSize)
 	dct.DAGTable = make([][]int, 0)
 }
@@ -57,7 +59,7 @@ func (dct * DepChanTable)CreateTaskSet(){
 		var send_to []int = dct.createSendTo(i)
 		pID := 0
 		var dataRecvd [] data.Data
-		var timeout time.Duration = 5 * time.Nanosecond 
+		var timeout time.Duration = dct.Timeout
 		dct.TaskSet[i] = task.Task{tID, rec_from, send_to,pID, dataRecvd, timeout}
 	}
 }

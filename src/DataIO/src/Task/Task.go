@@ -60,16 +60,26 @@ func (t * Task)readyToCompute()bool{
 func (t * Task)ComputeAndProduce()(data.Data,bool){
     var msg int
     start := time.Now()
-    for time.Now().Sub(start) < t.Timeout*1000 {
+    elapsed := time.Now().Sub(start)
+
+    for elapsed < t.Timeout {
+        elapsed = time.Now().Sub(start) 
+        
+        if t.TID == 4 {
+            time.Sleep(time.Millisecond*70)
+        }
         for i := 0; i < len(t.DataRecvd); i++ {
-            fmt.Println("meow", time.Now().Sub(start))
+           // fmt.Println("meow", time.Now().Sub(start), elapsed)
             msg += t.DataRecvd[i].Msg
         }
     }
-          
+         
     msg += int(math.Pow(10,float64(t.TID)))
     countID := 0
-    hasTimedOut :=  time.Now().Sub(start) < t.Timeout*1000
+    slack := time.Millisecond*10
+
+    hasTimedOut :=  elapsed > t.Timeout + slack
+    fmt.Println("res ",t.TID,hasTimedOut,elapsed,t.Timeout+slack)
     return data.Data{msg, t.TID, countID}, hasTimedOut
 }
 

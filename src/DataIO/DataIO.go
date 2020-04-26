@@ -19,9 +19,10 @@ import (
 func main(){
     var size int = 8
     var percent int = 50
+    var defaultTimeout = time.Millisecond *50
     dct := new(depchantable.DepChanTable)
 
-    dct.Init(size,percent)
+    dct.Init(size,percent,defaultTimeout)
     dct.CreateDAGTable()
     dct.PrintDAGTable()
 
@@ -32,8 +33,10 @@ func main(){
 
     for keepRunning(runset){    
         for i := 0; i < size; i++{
-            if dct.TaskSet[i].Fire(&dct.TaskSet) && isInRunSet(runset,i){
-                updateRunSet(runset,i)
+            if isInRunSet(runset,i){
+                if dct.TaskSet[i].Fire(&dct.TaskSet) {
+                    updateRunSet(runset,i)
+                }
             }
         }
     }           
