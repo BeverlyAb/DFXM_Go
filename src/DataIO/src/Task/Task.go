@@ -60,18 +60,14 @@ func (t * Task)readyToCompute()bool{
 //compute some Task and produce single output
 func (t * Task)ComputeAndProduce()data.Data{
     var msg int
-    for i := 0; i < len(t.DataRecvd); i++ {
-        start := time.Now()
-        select{
-            case <-time.After(t.Timeout/1000):
-                fmt.Println("timeout",time.Now().Sub(start))
-                return data.Data{-1,t.TID,-1}
-            default:
-                fmt.Println("meow", time.Now().Sub(start))
-                msg += t.DataRecvd[i].Msg
+    start := time.Now()
+    for time.Now().Sub(start) < t.Timeout*1000 {
+        for i := 0; i < len(t.DataRecvd); i++ {
+            fmt.Println("meow", time.Now().Sub(start))
+            msg += t.DataRecvd[i].Msg
         }
-          
     }
+          
     msg += int(math.Pow(10,float64(t.TID)))
     countID := 0
 
