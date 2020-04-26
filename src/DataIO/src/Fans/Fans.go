@@ -35,12 +35,13 @@ func Source(done <-chan bool,
 		for _, n := range nums{
 			select{
 			case <-done:
-				hasTimedOut = true
-				return 
-			case <-time.After(timeout):
 				fmt.Println("timeout1 ", timeout)
 				hasTimedOut = true
-				return
+				return 
+			// case <-time.After(timeout):
+			// 	fmt.Println("timeout2 ", timeout)
+			// 	hasTimedOut = true
+			// 	return
 			case out<-n:
 			}
 		}
@@ -131,9 +132,3 @@ func Print(out chan data.Data, index int){
 		fmt.Println(index, " : ",n.Msg)
 	}
 }
-
-
-
-
-
-

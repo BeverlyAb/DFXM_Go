@@ -2,7 +2,7 @@ package task
 //https://medium.com/a-journey-with-go/go-concurrency-access-with-maps-part-iii-8c0a0e4eb27e
 //concurrent map writes when timeTrack is removed
 import (
-    // "fmt"
+    "fmt"
     // "github.com/klauspost/cpuid"
     "data"
     "math"
@@ -27,6 +27,14 @@ func (t * Task)Fire(TaskSet * [] Task) bool{
     if t.readyToCompute(){
         done := make(chan bool)
         defer close(done)
+        start := time.Now()
+        select{
+            case <-time.After(t.Timeout):
+                fmt.Println("timeout",time.Now())
+            default:
+                fmt.Println("meow", time.Now().Sub(start))
+
+        }
 
         var buffer int = 1
         var fanOutSize int = len(t.Send_to)
@@ -89,4 +97,3 @@ func (t * Task)recData(receiver * Task, in chan data.Data){
         receiver.DataRecvd = append(receiver.DataRecvd, elem) 
     } 
 }
-
