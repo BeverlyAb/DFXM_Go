@@ -7,8 +7,8 @@ import (
     "data"
     "math"
     "time"
-    //"depchantable"
     "fans"
+    "timeout"
 )
 
 type Task struct{
@@ -58,29 +58,27 @@ func (t * Task)readyToCompute()bool{
 
 //compute some Task and produce single output
 func (t * Task)ComputeAndProduce()(data.Data,bool){
-    start := time.Now()
-    elapsed := time.Now().Sub(start)
-   
-//   // inserting long computation or busy computation
-   // if t.TID == 5 {
-   //      time.Sleep(time.Millisecond*70)
-   //  }
+    tm := new(timeout.Timeout)
+    tm.Init(t.Timeout)
+  // // inserting long computation or busy computation
+  //  if t.TID == 5 {
+  //       time.Sleep(time.Millisecond*70)
+  //   }
 
-   var msg int
-   var hasTimedOut bool = elapsed > t.Timeout
-    for i := 0; i < len(t.DataRecvd) && !hasTimedOut; i++ {
-        elapsed = time.Now().Sub(start)
-        hasTimedOut = elapsed > t.Timeout  
+    var msg int
+    for i := 0; i < len(t.DataRecvd) && !tm.HasTimedOut; i++ {
+        tm.Update() 
+        
         //do computation based on received data individually
         msg += t.DataRecvd[i].Msg
     }
     msg += int(math.Pow(10,float64(t.TID)))
 
-    if hasTimedOut{
+    if tm.HasTimedOut{
         t.RefireCount++
     }
     countID := t.RefireCount
-    return data.Data{msg, t.TID, countID}, hasTimedOut
+    return data.Data{msg, t.TID, countID}, tm.HasTimedOut
 }
 
 //assigns the channels on the receiving end after a task fires
