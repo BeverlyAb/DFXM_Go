@@ -67,15 +67,14 @@ func (t * Task)ComputeAndProduce()(data.Data,bool){
    //      time.Sleep(time.Millisecond*70)
    //  }
 
-    for elapsed < t.Timeout {
+
+    for i := 0; i < len(t.DataRecvd) && elapsed < t.Timeout; i++ {
         elapsed = time.Now().Sub(start) 
-        
-     
-        for i := 0; i < len(t.DataRecvd); i++ {
-           // fmt.Println("meow", time.Now().Sub(start), elapsed)
-            msg += t.DataRecvd[i].Msg
-        }
+    
+        fmt.Println("meow", time.Now().Sub(start), elapsed)
+        msg += t.DataRecvd[i].Msg
     }
+
          
     msg += int(math.Pow(10,float64(t.TID)))
     countID := 0
