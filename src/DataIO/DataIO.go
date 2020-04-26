@@ -62,6 +62,7 @@ func updateRunSet(runset  []int, index int){
     //runset = append(runset[:index],runset[index+1:]...)
 }
 
+//checks so that only tasks that haven't ran will run
 func isInRunSet(runset[] int,tid int)bool{
     for _,elem := range runset{
         if elem == tid {
@@ -71,6 +72,7 @@ func isInRunSet(runset[] int,tid int)bool{
     return false
 }
 
+//keep running until all tasks fired (success)
 func keepRunning(runset []int)bool{
     for _,tid := range runset{
         if tid != -1{

@@ -18,7 +18,7 @@ type Task struct{
     PID int                 //Processor ID
     DataRecvd [] data.Data  //list of Data received
     Timeout time.Duration 
-    RefireCount int         //keeps track of refire, used for Data's CountID
+    recomputeCount int         //keeps track of recompute, used for Data's CountID
 } 
 
 //Tasks sends data and releases info; returns bool to keep track of tasks
@@ -30,12 +30,12 @@ func (t * Task)Fire(TaskSet * [] Task) bool{
 
         var buffer int = 1
         var fanOutSize int = len(t.Send_to)
-        dataOut, refire := t.ComputeAndProduce()
+        dataOut, recompute := t.ComputeAndProduce()
         chanSet:= fans.FanOut( done,buffer,
                                         fanOutSize,
-                                        refire, 
+                                        recompute, 
                                         dataOut)
-        if refire {
+        if recompute {
             t.Timeout *= 2
             return false
         } else {
@@ -61,23 +61,22 @@ func (t * Task)ComputeAndProduce()(data.Data,bool){
     tm := new(timeout.Timeout)
     tm.Init(t.Timeout)
   // // inserting long computation or busy computation
-  //  if t.TID == 5 {
+  //   if t.TID == 5 {
   //       time.Sleep(time.Millisecond*70)
   //   }
-
     var msg int
+    //include !dead = dead will always be true
     for i := 0; i < len(t.DataRecvd) && !tm.HasTimedOut; i++ {
         tm.Update() 
-        
         //do computation based on received data individually
         msg += t.DataRecvd[i].Msg
     }
-    msg += int(math.Pow(10,float64(t.TID)))
 
+    msg += int(math.Pow(10,float64(t.TID)))
     if tm.HasTimedOut{
-        t.RefireCount++
+        t.recomputeCount++
     }
-    countID := t.RefireCount
+    countID := t.recomputeCount
     return data.Data{msg, t.TID, countID}, tm.HasTimedOut
 }
 
