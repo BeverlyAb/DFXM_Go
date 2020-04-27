@@ -13,9 +13,19 @@ type FaultInjector struct{
 	FaultPID map[int]int 				// PID: uses until failure
 }
 
-func (f * FaultInjector)Init(){
+//calls set functions
+func (f * FaultInjector)Init(totalTaskSize int, 
+							recompSize int, 
+							defaultTimeout time.Duration,
+							logicalCoreSize int, 
+							ratioToFailure int){
+
 	f.ReComputeTID = make(map[int] time.Duration)
 	f.FaultPID = make(map[int]int)
+
+	f.SetReComputeList(totalTaskSize,recompSize,defaultTimeout)
+    f.SetFaultList(totalTaskSize,logicalCoreSize,ratioToFailure)
+   
 }  
 
 //creates map of TID that have computations over the defaultTimeout
@@ -43,12 +53,12 @@ func (f * FaultInjector)InsertRecompute(tid int){
 
 //creates map of PID (of logical cores) and the number of uses until failure
 //ratio sets upperbound and lowerbound of iterations
-func (f * FaultInjector)SetFaultList(totalTaskSize int, cpuSize int, ratio int){
+func (f * FaultInjector)SetFaultList(totalTaskSize int, logicalCoreSize int, ratioToFailure int){
 	fmt.Println(runtime.NumCPU(),cpuid.CPU.LogicalCores,cpuid.CPU.LogicalCPU())
-	maxUses := totalTaskSize// * ratio //uses after failure can be up to ratio x task size
-	minUses := totalTaskSize / ratio //unlucky that some tasks fail 
+	maxUses := totalTaskSize * ratioToFailure //uses after failure can be up to ratio x task size
+	minUses := totalTaskSize / ratioToFailure //unlucky that some tasks fail 
 
-	for i := 0; i < cpuSize; i++ {
+	for i := 0; i < logicalCoreSize; i++ {
 		rand.Seed(time.Now().UTC().UnixNano())			//not fixed random
 		f.FaultPID[i] = rand.Intn(maxUses-minUses)+minUses
 	}

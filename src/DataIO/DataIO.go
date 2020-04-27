@@ -28,15 +28,13 @@ func main(){
     //generate Task Set
     dct.CreateTaskSet()
     
-    //Creating Tasks that compute over the timeout
+    //Creating Tasks that compute over the timeout and Processors that fail
     var recompSize int = 5
     var logicalCoreSize int = cpuid.CPU.LogicalCores
     var ratioToFailure int = 30
 
     faultinjector := new(faultinjector.FaultInjector)
-    faultinjector.Init()
-    faultinjector.SetReComputeList(totalTaskSize,recompSize,defaultTimeout)
-    faultinjector.SetFaultList(totalTaskSize,logicalCoreSize,ratioToFailure)
+    faultinjector.Init(totalTaskSize,recompSize,defaultTimeout,logicalCoreSize,ratioToFailure)
     runset := createRunSet(totalTaskSize) //slice
 
     for keepRunning(runset){    
