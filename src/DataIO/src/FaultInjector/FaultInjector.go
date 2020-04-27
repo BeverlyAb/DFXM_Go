@@ -1,4 +1,4 @@
-package faulthandler
+package faultinjector
 // package main
 import(
 	"fmt"
@@ -6,16 +6,16 @@ import(
 	"math/rand"
 )
 
-type FaultHandler struct{
+type FaultInjector struct{
 	ReComputeTID map[int]time.Duration // TID : timeToSleep
 }
 
-func (f * FaultHandler)Init(){
+func (f * FaultInjector)Init(){
 	f.ReComputeTID = make(map[int] time.Duration)
 }  
 
 //creates map of TID that have computations over the defaultTimeout
-func (f * FaultHandler)SetReComputeList(totalTaskSize int, recompSize int, defaultTimeout time.Duration){
+func (f * FaultInjector)SetReComputeList(totalTaskSize int, recompSize int, defaultTimeout time.Duration){
 	timeLimitOver := int(defaultTimeout * 3) //compute time can be over 3x task timeout period
 	minTimeLimit := int(defaultTimeout) + 1
 	 
@@ -29,7 +29,7 @@ func (f * FaultHandler)SetReComputeList(totalTaskSize int, recompSize int, defau
 }
 
 //creates a simulated long computation time if the TID is within ReComputeTID
-func (f * FaultHandler)InsertRecompute(tid int){
+func (f * FaultInjector)InsertRecompute(tid int){
 	timeout, ok := f.ReComputeTID[tid]
 	if ok {
 		time.Sleep(timeout)
@@ -41,7 +41,7 @@ func (f * FaultHandler)InsertRecompute(tid int){
 // 	var recompSize int = 5
 // 	var defaultTimeout = time.Millisecond * 50
 
-// 	faulthandler := new(FaultHandler)
-// 	faulthandler.Init()
-// 	faulthandler.SetReComputeList(totatTaskSize,recompSize,defaultTimeout)
+// 	faultinjector := new(FaultInjector)
+// 	faultinjector.Init()
+// 	faultinjector.SetReComputeList(totatTaskSize,recompSize,defaultTimeout)
 // }

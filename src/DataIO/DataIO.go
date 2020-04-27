@@ -10,7 +10,7 @@ import (
     "time"
     "depchantable"
     "fmt"
-    "faulthandler"
+    "faultinjector"
 )
 
 
@@ -30,16 +30,16 @@ func main(){
     
     //Creating Tasks that compute over the timeout
     var recompSize int = 5
-    faulthandler := new(faulthandler.FaultHandler)
-    faulthandler.Init()
-    faulthandler.SetReComputeList(totalTaskSize,recompSize,defaultTimeout)
+    faultinjector := new(faultinjector.FaultInjector)
+    faultinjector.Init()
+    faultinjector.SetReComputeList(totalTaskSize,recompSize,defaultTimeout)
 
     runset := createRunSet(totalTaskSize) //slice
 
     for keepRunning(runset){    
         for i := 0; i < totalTaskSize; i++{
             if isInRunSet(runset,i){
-                if dct.TaskSet[i].Fire(&dct.TaskSet,faulthandler) {
+                if dct.TaskSet[i].Fire(&dct.TaskSet,faultinjector) {
                     updateRunSet(runset,i)
                 }
             }

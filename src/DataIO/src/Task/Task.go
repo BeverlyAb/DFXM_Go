@@ -9,7 +9,7 @@ import (
     "time"
     "fans"
     "timeout"
-    "faulthandler"
+    "faultinjector"
 )
 
 type Task struct{
@@ -24,7 +24,7 @@ type Task struct{
 
 //Tasks sends data and releases info; returns bool to keep track of tasks
 //that still needs to fire
-func (t * Task)Fire(TaskSet * [] Task, FH * faulthandler.FaultHandler) bool{
+func (t * Task)Fire(TaskSet * [] Task, FH * faultinjector.FaultInjector) bool{
     if t.readyToCompute(){
         done := make(chan bool)
         defer close(done)
@@ -58,7 +58,7 @@ func (t * Task)readyToCompute()bool{
 }
 
 //compute some Task and produce single output
-func (t * Task)ComputeAndProduce(FH * faulthandler.FaultHandler)(data.Data,bool){
+func (t * Task)ComputeAndProduce(FH * faultinjector.FaultInjector)(data.Data,bool){
     tm := new(timeout.Timeout)
     tm.Init(t.Timeout)
 
@@ -72,6 +72,7 @@ func (t * Task)ComputeAndProduce(FH * faulthandler.FaultHandler)(data.Data,bool)
         //do computation based on received data individually
         msg += t.DataRecvd[i].Msg
     }
+    tm.Update() //another call in case t.DataRecvd was empty
 
     msg += int(math.Pow(10,float64(t.TID)))
     if tm.HasTimedOut{
