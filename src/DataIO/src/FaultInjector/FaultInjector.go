@@ -1,5 +1,5 @@
-// package faultinjector
-package main
+package faultinjector
+// package main
 import(
 	"fmt"
 	"time"
@@ -29,7 +29,7 @@ func (f * FaultInjector)SetReComputeList(totalTaskSize int, recompSize int, defa
 		f.ReComputeTID[recomputeTID] = time.Duration(rand.Intn(timeLimitOver-minTimeLimit)+minTimeLimit)
 	}
 
-	fmt.Println(f.ReComputeTID)
+	fmt.Println("ReCompute",f.ReComputeTID)
 }
 
 //creates a simulated long computation time if the TID is within ReComputeTID
@@ -41,11 +41,11 @@ func (f * FaultInjector)InsertRecompute(tid int){
 }
 
 
-//creates map of PID and the number of uses until failure
+//creates map of PID (of logical cores) and the number of uses until failure
 //ratio sets upperbound and lowerbound of iterations
 func (f * FaultInjector)SetFaultList(totalTaskSize int, cpuSize int, ratio int){
 	fmt.Println(runtime.NumCPU(),cpuid.CPU.LogicalCores,cpuid.CPU.LogicalCPU())
-	maxUses := totalTaskSize * ratio //uses after failure can be up to ratio x task size
+	maxUses := totalTaskSize// * ratio //uses after failure can be up to ratio x task size
 	minUses := totalTaskSize / ratio //unlucky that some tasks fail 
 
 	for i := 0; i < cpuSize; i++ {
@@ -53,19 +53,26 @@ func (f * FaultInjector)SetFaultList(totalTaskSize int, cpuSize int, ratio int){
 		f.FaultPID[i] = rand.Intn(maxUses-minUses)+minUses
 	}
 
-	fmt.Println(f.FaultPID)
+	fmt.Println("Fault",f.FaultPID)
 }
-func (f * FaultInjector)InsertFault(tid int){
 
+//marks Processor as dead if uses == 0 
+func (f * FaultInjector)InsertFault(PID int)bool{
+	uses, ok := f.FaultPID[PID]
+	if ok { //should be always ok for now...
+		f.FaultPID[PID] = uses - 1
+	} 
+	fmt.Println("PID",PID,":",uses,uses ==0)
+	return uses == 0
 }
-func main(){
-	var totatTaskSize int = 10
-	var recompSize int = 5
-	var defaultTimeout = time.Millisecond * 50
-	var cpuSize int = cpuid.CPU.LogicalCores
-	var ratioToFailure int = 3
-	faultinjector := new(FaultInjector)
-	faultinjector.Init()
-	faultinjector.SetReComputeList(totatTaskSize,recompSize,defaultTimeout)
-	faultinjector.SetFaultList(totatTaskSize,cpuSize,ratioToFailure)
-}
+// func main(){
+// 	var totatTaskSize int = 10
+// 	var recompSize int = 5
+// 	var defaultTimeout = time.Millisecond * 50
+// 	var cpuSize int = cpuid.CPU.LogicalCores
+// 	var ratioToFailure int = 3
+// 	faultinjector := new(FaultInjector)
+// 	faultinjector.Init()
+// 	faultinjector.SetReComputeList(totatTaskSize,recompSize,defaultTimeout)
+// 	faultinjector.SetFaultList(totatTaskSize,cpuSize,ratioToFailure)
+// }

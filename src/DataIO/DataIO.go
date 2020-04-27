@@ -6,7 +6,7 @@ package main
 ///https://play.golang.org/p/I-GA6DYd0HK //Fanout
 //https://golangbot.com/arrays-and-slices/ //slices
 import (
-    // "github.com/klauspost/cpuid"
+    "github.com/klauspost/cpuid"
     "time"
     "depchantable"
     "fmt"
@@ -16,24 +16,27 @@ import (
 
 
 func main(){
-    var totalTaskSize int = 8
+    var totalTaskSize int = 20
     var percent int = 50
     var defaultTimeout = time.Millisecond * 50
     //synthetic problem DAG
     dct := new(depchantable.DepChanTable)
     dct.Init(totalTaskSize,percent,defaultTimeout)
     dct.CreateDAGTable()
-    dct.PrintDAGTable()
+    // dct.PrintDAGTable()
 
     //generate Task Set
     dct.CreateTaskSet()
     
     //Creating Tasks that compute over the timeout
     var recompSize int = 5
+    var logicalCoreSize int = cpuid.CPU.LogicalCores
+    var ratioToFailure int = 30
+
     faultinjector := new(faultinjector.FaultInjector)
     faultinjector.Init()
     faultinjector.SetReComputeList(totalTaskSize,recompSize,defaultTimeout)
-
+    faultinjector.SetFaultList(totalTaskSize,logicalCoreSize,ratioToFailure)
     runset := createRunSet(totalTaskSize) //slice
 
     for keepRunning(runset){    

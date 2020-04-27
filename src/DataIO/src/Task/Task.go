@@ -3,9 +3,9 @@ package task
 //concurrent map writes when timeTrack is removed
 import (
     // "fmt"
-    // "github.com/klauspost/cpuid"
+    "github.com/klauspost/cpuid"
     "data"
-    "math"
+    // "math"
     "time"
     "fans"
     "timeout"
@@ -62,19 +62,20 @@ func (t * Task)ComputeAndProduce(FH * faultinjector.FaultInjector)(data.Data,boo
     tm := new(timeout.Timeout)
     tm.Init(t.Timeout)
 
-    //inserting long computation
-    FH.InsertRecompute(t.TID)
-
+    PID := cpuid.CPU.LogicalCPU() //should find a way to attach CPU 
+    var isDead bool = FH.InsertFault(PID)
+    for isDead{} //hangs indefinitely
+    
+    FH.InsertRecompute(t.TID) //inserting long computation
     var msg int
-    //include !dead = dead will always be true
     for i := 0; i < len(t.DataRecvd) && !tm.HasTimedOut; i++ {
         tm.Update() 
         //do computation based on received data individually
-        msg += t.DataRecvd[i].Msg
+        //msg += t.DataRecvd[i].Msg
     }
     tm.Update() //another call in case t.DataRecvd was empty
 
-    msg += int(math.Pow(10,float64(t.TID)))
+    msg += t.TID//int(math.Pow(10,float64(t.TID)))
     if tm.HasTimedOut{
         t.RecomputeCount++
     }
